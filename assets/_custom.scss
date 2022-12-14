@@ -1,3 +1,14 @@
 /* You can add custom styles here. */
 
 // @import "plugins/numbered";
+.book-social {
+  padding-top: $padding-16;
+  font-size: $font-size-14;
+
+  img {
+    height: 2em;
+    width: 2em;
+    margin-inline-end: $padding-8;
+  }
+}
+
