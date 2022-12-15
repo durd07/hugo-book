@@ -1,4 +1,5 @@
 <h2 class="book-brand">
+  <br>
   <a class="align-center" href="{{ cond (not .Site.Home.File) .Sites.First.Home.RelPermalink .Site.Home.RelPermalink }}">
     {{- with .Site.Params.BookLogo -}}
     <center><img src="{{ . | relURL }}" alt="Logo" /></center>
@@ -7,7 +8,7 @@
 </h2>
 <h2>
   <a class="flex align-center" href="{{ cond (not .Site.Home.File) .Sites.First.Home.RelPermalink .Site.Home.RelPermalink }}">
-    <b>{{ .Site.Title }}</b>
+    {{ .Site.Title }}
   </a>
   <div class="book-social">
     <a href="mailto: felix.du@nokia-sbell.com"><img src="/images/social/mail.png"></a>
