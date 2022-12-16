@@ -1,5 +1,4 @@
 <h2 class="book-brand">
-  <br>
   <a class="align-center" href="{{ cond (not .Site.Home.File) .Sites.First.Home.RelPermalink .Site.Home.RelPermalink }}">
     {{- with .Site.Params.BookLogo -}}
     <center><img src="{{ . | relURL }}" alt="Logo" /></center>
