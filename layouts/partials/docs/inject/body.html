@@ -18,7 +18,8 @@
           Array.prototype.forEach.call(document.querySelectorAll("[class^=" + plantumlPrefix + "]"), function (code) {
             let image = document.createElement("IMG");
             image.loading = 'lazy'; // Lazy loading
-            image.src = 'http://www.plantuml.com/plantuml/svg/~1' + plantumlEncoder.encode(code.innerText);
+            //image.src = 'http://www.plantuml.com/plantuml/svg/~1' + plantumlEncoder.encode(code.innerText);
+            image.src = 'http://felixdu.dynamic.nsn-net.net/plantuml/svg/~1' + plantumlEncoder.encode(code.innerText);
             code.parentNode.parentNode.insertBefore(image, code.parentNode);
             code.parentNode.style.display = 'none';
           });
