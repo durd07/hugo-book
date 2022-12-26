@@ -1,21 +1,21 @@
 <script>
-    const loadScript = (url, onloadFunction) => {
+  const loadScript = (url, onloadFunction) => {
     var newScript = document.createElement("script");
-    newScript.onerror =  (oError) => {
+    newScript.onerror = (oError) => {
       throw new URIError("The script " + oError.target.src + " didn't load correctly.");
     };
-    if (onloadFunction) { newScript.onload = onloadFunction; }
+    if (onloadFunction) {newScript.onload = onloadFunction;}
     document.head.insertAdjacentElement('beforeend', newScript);
     newScript.src = url;
   }
 
-    const loadPlantUMLOnNeed = () => {
+  const loadPlantUMLOnNeed = () => {
     let plantumlPrefix = "language-plantuml";
 
     if (document.querySelectorAll("[class^=" + plantumlPrefix + "]").length > 0) {
       loadScript('https://cdn.jsdelivr.net/gh/jmnote/plantuml-encoder@1.2.4/dist/plantuml-encoder.min.js', () => {
-        (function(){
-          Array.prototype.forEach.call(document.querySelectorAll("[class^=" + plantumlPrefix + "]"), function(code){
+        (function () {
+          Array.prototype.forEach.call(document.querySelectorAll("[class^=" + plantumlPrefix + "]"), function (code) {
             let image = document.createElement("IMG");
             image.loading = 'lazy'; // Lazy loading
             image.src = 'http://www.plantuml.com/plantuml/svg/~1' + plantumlEncoder.encode(code.innerText);
@@ -29,7 +29,7 @@
     }
   }
 
-  window.addEventListener('load', function(event) {
+  window.addEventListener('load', function (event) {
     // load PlantUML
     loadPlantUMLOnNeed();
   })
@@ -43,16 +43,23 @@
 <script defer src="{{ "katex/katex.min.js" | relURL }}"></script>
 <script defer src="{{ "katex/auto-render.min.js" | relURL }}"></script>
 <script>
-    document.addEventListener("DOMContentLoaded", function() {
-        renderMathInElement(document.body, {
-            delimiters: [
-                {left: "$$", right: "$$", display: true},
-                {left: "$", right: "$", display: false},
-                {left: "\\(", right: "\\)", display: false},
-                {left: "\\[", right: "\\]", display: true}
-            ]
-        });
+  document.addEventListener("DOMContentLoaded", function () {
+    let katexPrefix = "language-math";
+    Array.prototype.forEach.call(document.querySelectorAll("[class^=" + katexPrefix + "]"), function (code) {
+      let katex_p = document.createElement("p");
+      katex_p.innerHTML = "$$" + code.innerText + "$$"
+      code.parentElement.parentElement.replaceChild(katex_p, code.parentElement)
     });
+
+    renderMathInElement(document.body, {
+      delimiters: [
+        {left: "$$", right: "$$", display: true},
+        {left: "$", right: "$", display: false},
+        {left: "\\(", right: "\\)", display: false},
+        {left: "\\[", right: "\\]", display: true}
+      ]
+    });
+  });
 </script>
 {{- .Page.Scratch.Set "katex" true -}}
 {{- end -}}
