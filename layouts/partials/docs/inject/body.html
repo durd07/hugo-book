@@ -19,8 +19,8 @@
             let image = document.createElement("IMG");
             image.loading = 'lazy'; // Lazy loading
             image.src = 'http://www.plantuml.com/plantuml/svg/~1' + plantumlEncoder.encode(code.innerText);
-            code.parentNode.insertBefore(image, code);
-            code.style.display = 'none';
+            code.parentNode.parentNode.insertBefore(image, code.parentNode);
+            code.parentNode.style.display = 'none';
           });
         })();
 
