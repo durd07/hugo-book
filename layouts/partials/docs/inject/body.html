@@ -40,9 +40,9 @@
 {{ if or .Params.katex .Site.Params.katex }}
 {{- if not (.Page.Scratch.Get "katex") -}}
 <!-- Include katext only first time -->
-<link rel="stylesheet" href="{{ "katex/katex.min.css" | relURL }}" />
-<script defer src="{{ "katex/katex.min.js" | relURL }}"></script>
-<script defer src="{{ "katex/auto-render.min.js" | relURL }}"></script>
+<link rel="stylesheet" href="{{ " katex/katex.min.css" | relURL }}" />
+<script defer src="{{ " katex/katex.min.js" | relURL }}"></script>
+<script defer src="{{ " katex/auto-render.min.js" | relURL }}"></script>
 <script>
   document.addEventListener("DOMContentLoaded", function () {
     let katexPrefix = "language-math";
@@ -65,6 +65,65 @@
 {{- .Page.Scratch.Set "katex" true -}}
 {{- end -}}
 {{ end }}
+
+<script>
+  function clearActiveStatesInTableOfContents() {
+    document.querySelectorAll(`div[class="book-toc-content"] nav li`).forEach((item) => {
+      item.classList.remove('active')
+    });
+  }
+
+  window.addEventListener('DOMContentLoaded', () => {
+
+    const observer = new IntersectionObserver(entries => {
+      entries.forEach(entry => {
+        const id = entry.target.getAttribute('id');
+        if (document.querySelector(`div[class="book-toc-content"] nav li a[href="#${id}"]`) != null) {
+          if (entry.intersectionRatio > 0) {
+            clearActiveStatesInTableOfContents();
+            document.querySelector(`div[class="book-toc-content"] nav li a[href="#${id}"]`).parentElement.classList.add('active');
+          } else {
+            document.querySelector(`div[class="book-toc-content"] nav li a[href="#${id}"]`).parentElement.classList.remove('active');
+          }
+        }
+      });
+    });
+
+    // Track all sections that have an `id` applied
+    document.querySelectorAll("h1,h2,h3,h4").forEach((section) => {
+      observer.observe(section);
+    });
+
+    //Array.prototype.forEach.call(document.querySelectorAll("h2, h3, h4, h5, h6"), function (entry) {
+    //  const id = entry.getAttribute('id');
+    //  if (id != null) {
+    //    if (entry.intersectionRatio > 0) {
+    //      console.log(id, "active")
+    //      document.querySelector(`nav li a[href="#${id}"]`).parentElement.classList.add('active');
+    //    } else {
+    //      console.log(id, "deactive")
+    //      document.querySelector(`nav li a[href="#${id}"]`).parentElement.classList.remove('active');
+    //    }
+    //  }
+    //});
+
+    //const callback = (mutationList, observer) => {
+    //  for (const mutation of mutationList) {
+    //    if (mutation.type === 'childList') {
+    //      console.log('A child node has been added or removed.');
+    //    } else if (mutation.type === 'attributes') {
+    //      console.log(`The ${mutation.attributeName} attribute was modified.`);
+    //    }
+    //  }
+    //};
+
+    //const observer = new MutationObserver(callback);
+    //// Track all sections that have an `id` applied
+    //document.querySelectorAll("h2, h3, h4, h5, h6").forEach((section) => {
+    //  observer.observe(callback);
+    //});
+  });
+</script>
 
 <!--
 <button style="position: fixed ! important; right: 0px; bottom: 0px;" onclick="toggleFullScreen()">Fullscreen</button>
