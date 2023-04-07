@@ -14,8 +14,10 @@
   h4,
   h5,
   h6 {
-    font-weight: normal;
-    line-height: 1;
+    font-weight: bold;
+    //color:steelblue;
+    color:#84b2ff;
+    line-height: 1.5;
     margin-top: 1.5em;
     margin-bottom: $padding-16;
 
@@ -95,8 +97,9 @@
     margin: $padding-16 0;
     padding: $padding-8 $padding-16 $padding-8 ($padding-16 - $padding-4); //to keep total left space 16dp
 
-    border-inline-start: $padding-4 solid var(--gray-200);
-    border-radius: $border-radius;
+    border-inline-start: $padding-8 solid steelblue;
+    background: rgba(255, 255, 255, 0.03);;
+    //border-radius: $border-radius;
 
     :first-child {
       margin-top: 0;
@@ -133,7 +136,7 @@
 
   ul,
   ol {
-    padding-inline-start: $padding-16 * 2;
+    padding-inline-start: $padding-16 * 3;
   }
 
   dl {
@@ -170,9 +173,11 @@
       padding: $padding-16;
       margin: -$padding-16;
       cursor: pointer;
+      font-weight: bold;
     }
 
     &[open] summary {
+      border-bottom: 0.5px solid var(--gray-200);
       margin-bottom: 0;
     }
   }
@@ -184,6 +189,7 @@
     }
   }
 }
+
 
 .markdown-inner {
   // Util class to remove extra margin in nested markdown content
