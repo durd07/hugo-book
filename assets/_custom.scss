@@ -1,4 +1,24 @@
 /* You can add custom styles here. */
+.grid-container {
+  display: grid;
+  //grid-template-columns: auto auto auto auto;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
+  grid-column-gap: 30px;
+  grid-row-gap: 10px;
+  //background-color: #666;
+  padding: 10px;
+}
+.grid-container > div {
+  background-color: dodgerblue;
+  text-align: center;
+  padding: 10px 0;
+  font-size: 16px;
+}
+
+.grid-container > div > a > img {
+//  height: 100px;
+  width: 80px;
+}
 
 // @import "plugins/numbered";
 .book-social {
