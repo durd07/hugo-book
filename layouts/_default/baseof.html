@@ -8,7 +8,7 @@
   <input type="checkbox" class="hidden toggle" id="menu-control" />
   <input type="checkbox" class="hidden toggle" id="toc-control" />
   <main class="container flex">
-    <aside class="book-menu">
+    <aside class="book-menu" id="book-menu">
       <div class="book-menu-content">
         {{ template "menu" . }} <!-- Left menu Content -->
       </div>
@@ -34,7 +34,7 @@
     </div>
 
     {{ if default true (default .Site.Params.BookToC .Params.BookToC) }}
-    <aside class="book-toc">
+    <aside class="book-toc" id="book-toc">
       <div class="book-toc-content">
         {{ template "toc" . }} <!-- Table of Contents -->
       </div>

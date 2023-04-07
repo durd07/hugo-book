@@ -1,0 +1,136 @@
+<script>
+  const loadScript = (url, onloadFunction) => {
+    var newScript = document.createElement("script");
+    newScript.onerror = (oError) => {
+      throw new URIError("The script " + oError.target.src + " didn't load correctly.");
+    };
+    if (onloadFunction) {newScript.onload = onloadFunction;}
+    document.head.insertAdjacentElement('beforeend', newScript);
+    newScript.src = url;
+  }
+
+  const loadPlantUMLOnNeed = () => {
+    let plantumlPrefix = "language-plantuml";
+
+    if (document.querySelectorAll("[class^=" + plantumlPrefix + "]").length > 0) {
+      loadScript('https://cdn.jsdelivr.net/gh/jmnote/plantuml-encoder@1.2.4/dist/plantuml-encoder.min.js', () => {
+        (function () {
+          Array.prototype.forEach.call(document.querySelectorAll("[class^=" + plantumlPrefix + "]"), function (code) {
+            let image = document.createElement("IMG");
+            image.loading = 'lazy'; // Lazy loading
+            //image.src = 'http://www.plantuml.com/plantuml/svg/~1' + plantumlEncoder.encode(code.innerText);
+            image.src = 'http://felixdu.dynamic.nsn-net.net/plantuml/svg/~1' + plantumlEncoder.encode(code.innerText);
+            code.parentNode.parentNode.insertBefore(image, code.parentNode);
+            code.parentNode.style.display = 'none';
+          });
+        })();
+
+        console.log("PlantUML init done");
+      })
+    }
+  }
+
+  window.addEventListener('load', function (event) {
+    // load PlantUML
+    loadPlantUMLOnNeed();
+  })
+</script>
+
+<!-- Katex -->
+{{ if or .Params.katex .Site.Params.katex }}
+{{- if not (.Page.Scratch.Get "katex") -}}
+<!-- Include katext only first time -->
+<link rel="stylesheet" href="{{ "katex/katex.min.css" | relURL }}" />
+<script defer src="{{ "katex/katex.min.js" | relURL }}"></script>
+<script defer src="{{ "katex/auto-render.min.js" | relURL }}"></script>
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    let katexPrefix = "language-math";
+    Array.prototype.forEach.call(document.querySelectorAll("[class^=" + katexPrefix + "]"), function (code) {
+      let katex_p = document.createElement("p");
+      katex_p.innerHTML = "$$" + code.innerText + "$$"
+      code.parentElement.parentElement.replaceChild(katex_p, code.parentElement)
+    });
+
+    renderMathInElement(document.body, {
+      delimiters: [
+        {left: "$$", right: "$$", display: true},
+        {left: "$", right: "$", display: false},
+        {left: "\\(", right: "\\)", display: false},
+        {left: "\\[", right: "\\]", display: true}
+      ]
+    });
+  });
+</script>
+{{- .Page.Scratch.Set "katex" true -}}
+{{- end -}}
+{{ end }}
+
+<script>
+  function clearActiveStatesInTableOfContents() {
+    document.querySelectorAll(`div[class="book-toc-content"] nav li`).forEach((item) => {
+      item.classList.remove('active')
+    });
+  }
+
+  window.addEventListener('DOMContentLoaded', () => {
+
+    const observer = new IntersectionObserver(entries => {
+      entries.forEach(entry => {
+        const id = entry.target.getAttribute('id');
+        if (document.querySelector(`div[class="book-toc-content"] nav li a[href="#${id}"]`) != null) {
+          if (entry.intersectionRatio > 0) {
+            clearActiveStatesInTableOfContents();
+            document.querySelector(`div[class="book-toc-content"] nav li a[href="#${id}"]`).parentElement.classList.add('active');
+          } else {
+            document.querySelector(`div[class="book-toc-content"] nav li a[href="#${id}"]`).parentElement.classList.remove('active');
+          }
+        }
+      });
+    });
+
+    // Track all sections that have an `id` applied
+    document.querySelectorAll("h1,h2,h3,h4").forEach((section) => {
+      observer.observe(section);
+    });
+
+    //Array.prototype.forEach.call(document.querySelectorAll("h2, h3, h4, h5, h6"), function (entry) {
+    //  const id = entry.getAttribute('id');
+    //  if (id != null) {
+    //    if (entry.intersectionRatio > 0) {
+    //      console.log(id, "active")
+    //      document.querySelector(`nav li a[href="#${id}"]`).parentElement.classList.add('active');
+    //    } else {
+    //      console.log(id, "deactive")
+    //      document.querySelector(`nav li a[href="#${id}"]`).parentElement.classList.remove('active');
+    //    }
+    //  }
+    //});
+
+    //const callback = (mutationList, observer) => {
+    //  for (const mutation of mutationList) {
+    //    if (mutation.type === 'childList') {
+    //      console.log('A child node has been added or removed.');
+    //    } else if (mutation.type === 'attributes') {
+    //      console.log(`The ${mutation.attributeName} attribute was modified.`);
+    //    }
+    //  }
+    //};
+
+    //const observer = new MutationObserver(callback);
+    //// Track all sections that have an `id` applied
+    //document.querySelectorAll("h2, h3, h4, h5, h6").forEach((section) => {
+    //  observer.observe(callback);
+    //});
+  });
+</script>
+
+<!--
+<button style="position: fixed ! important; right: 0px; bottom: 0px;" onclick="toggleFullScreen()">Fullscreen</button>
+<script>
+  function toggleFullScreen() {
+    document.getElementById("book-menu").classList.toggle('hidden');
+    document.getElementById("book-toc").classList.toggle('hidden');
+  }
+</script>
+-->

@@ -90,9 +90,10 @@ ul.pagination {
   margin-bottom: $padding-16;
 
   img {
-    height: 1.5em;
-    width: 1.5em;
+    height: 7.5em;
+    width: 7.5em;
     margin-inline-end: $padding-8;
+    border-radius:50%;
   }
 }
 
@@ -228,7 +229,7 @@ body[dir="rtl"] .book-menu {
 
 .book-toc {
   flex: 0 0 $toc-width;
-  font-size: $font-size-12;
+  font-size: $font-size-14;
 
   .book-toc-content {
     width: $toc-width;

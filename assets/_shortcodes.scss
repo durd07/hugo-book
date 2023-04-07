@@ -64,17 +64,38 @@
     }
   }
 
-  // {{< columns >}}
-  .book-columns {
-    margin-left: -$padding-16;
-    margin-right: -$padding-16;
+// {{< columns >}}
+//  .book-columns {
+//    margin-left: -$padding-16;
+//    margin-right: -$padding-16;
+//
+//    > div {
+//      margin: $padding-16 0;
+//      min-width: $body-min-width / 2;
+//      padding: 0 $padding-16;
+//    }
+//  }
 
-    > div {
-      margin: $padding-16 0;
-      min-width: $body-min-width / 2;
-      padding: 0 $padding-16;
-    }
-  }
+.book-columns {
+  display: grid;
+  //grid-template-columns: auto auto auto auto;
+  //grid-template-columns: 1fr 1fr 1fr 1fr;
+  grid-template-columns: 30% 30% 30%;
+  grid-column-gap: 30px;
+  grid-row-gap: 10px;
+  //background-color: #666;
+  padding: 10px;
+}
+.book-columns > div {
+  background-color: dodgerblue;
+//  text-align: center;
+  padding: 20px 0;
+  font-size: 16px;
+}
+
+.book-columns > div > a > img {
+  width: 80px;
+}
 
   // {{< button >}}
   a.book-btn {
