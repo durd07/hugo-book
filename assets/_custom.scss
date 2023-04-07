@@ -16,7 +16,8 @@
 }
 
 .grid-container > div > a > img {
-//  height: 100px;
+  object-fit: contain;
+  height: 80px;
   width: 80px;
 }
 
