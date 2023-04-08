@@ -25,6 +25,17 @@
   width: 80px;
 }
 
+.grid-container-repo {
+  text-align: left !important;
+
+  a > img {
+  width: 30px !important;
+  height: 30px !important;
+  vertical-align: middle;
+  margin: 0px 5px 0px 20px;
+  }
+}
+
 // @import "plugins/numbered";
 .book-social {
   padding-top: $padding-16;

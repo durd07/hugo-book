@@ -80,7 +80,7 @@
   display: grid;
   //grid-template-columns: auto auto auto auto;
   //grid-template-columns: 1fr 1fr 1fr 1fr;
-  grid-template-columns: 30% 30% 30%;
+  grid-template-columns: 1fr 1fr 1fr;
   grid-column-gap: 30px;
   grid-row-gap: 10px;
   //background-color: #666;
@@ -108,7 +108,12 @@
 
 
 .book-columns > div > a > img {
-  width: 80px;
+  //width: 80px;
+
+  width: 30px !important;
+  height: 30px !important;
+  vertical-align: middle;
+  margin: 0px 5px 0px 20px;
 }
 
   // {{< button >}}
