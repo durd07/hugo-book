@@ -85,13 +85,27 @@
   grid-row-gap: 10px;
   //background-color: #666;
   padding: 10px;
+   
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    text-align: center;
+  }
 }
 .book-columns > div {
   background-color:rgba(255, 255, 255, 0.1);
 //  text-align: center;
   padding: 20px 0;
   font-size: 16px;
+
+  &:hover {
+  background-color: #336699;
 }
+}
+
 
 .book-columns > div > a > img {
   width: 80px;
