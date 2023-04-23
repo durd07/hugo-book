@@ -42,8 +42,8 @@
   font-size: $font-size-14;
 
   img {
-    height: 2em;
-    width: 2em;
+    height: 2em !important;
+    width: 2em !important;
     margin-inline-end: $padding-8;
   }
 }
