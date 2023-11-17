@@ -8869,8 +8869,8 @@
   width: 60px;
   height: 60px;
   border-radius: 50%;
-  background-color:antiquewhite;
-  color:#336699;
+  background-color: antiquewhite;
+  color: #336699;
   font-weight: bolder;
   text-align: center;
   line-height: 60px;
@@ -8887,10 +8887,10 @@
   bottom: 80px;
   right: 10px;
   width: 400px;
-  padding-right: 15px;
+  padding: 5px;
   margin: 0;
-  background-color:antiquewhite;
-        border-radius: 5px;
+  background-color: antiquewhite;
+  border-radius: 5px;
 }
 
 .toc-menu-toggle:hover .toc-menu-items {
@@ -8902,15 +8902,13 @@
   /* Remove default list styles */
   margin-bottom: 10px;
   padding: 0;
-
-
 }
 
 .toc-menu-items li {
   padding: 0px;
   padding-left: 15px;
-  //text-indent: -5px;
-
+  text-indent: -5px;
+  border-left: 8px solid antiquewhite;
 }
 
 .toc-menu-items li a {
@@ -8920,9 +8918,12 @@
   color: cadetblue;
 }
 
-.toc-menu-items li a:hover {
+.toc-menu-items li:hover {
+  border-left: 8px solid cadetblue;
+}
+
+.toc-menu-items li:not(:has(ul)):hover {
   background-color: #333;
   font-weight: bold;
-  color:cadetblue;
-	border-left: 1px solid var(--gray-200);
+  color: cadetblue;
 }
