@@ -16,7 +16,7 @@
   h6 {
     font-weight: bold;
     //color:steelblue;
-    color:#84b2ff;
+    color: var(--gray-300);
     line-height: 1.5;
     margin-top: 1.5em;
     margin-bottom: $padding-16;
@@ -39,6 +39,12 @@
     //line-height: 3;
     margin-top: 3em;
     //padding-top: 1em;
+    color: aliceblue;
+    padding: 80px;
+    font-size: 48px;
+    background-image: url("/images/image-1.png");
+    background-size: cover;
+    background-position: center;
   }
 
   h4,
