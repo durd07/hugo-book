@@ -37,7 +37,7 @@
     </div>
 
     {{ if default true (default .Site.Params.BookToC .Params.BookToC) }}
-    <div class="toc-menu-toggle"> <img src="../../../../svg/toc.svg" class="toc-button-toggle"></img>
+    <div class="toc-menu-toggle"> <img src="/svg/toc.svg" class="toc-button-toggle"></img>
       <div class="toc-menu-items">
         <h2 style="color: cadetblue; font-weight: bold;"><center>Table of contents</center></h2>
       {{ template "toc" . }} <!-- Table of Contents -->
