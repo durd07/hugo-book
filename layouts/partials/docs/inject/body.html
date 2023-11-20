@@ -4,7 +4,7 @@
     newScript.onerror = (oError) => {
       throw new URIError("The script " + oError.target.src + " didn't load correctly.");
     };
-    if (onloadFunction) {newScript.onload = onloadFunction;}
+    if (onloadFunction) { newScript.onload = onloadFunction; }
     document.head.insertAdjacentElement('beforeend', newScript);
     newScript.src = url;
   }
@@ -40,9 +40,9 @@
 {{ if or .Params.katex .Site.Params.katex }}
 {{- if not (.Page.Scratch.Get "katex") -}}
 <!-- Include katext only first time -->
-<link rel="stylesheet" href="{{ "katex/katex.min.css" | relURL }}" />
-<script defer src="{{ "katex/katex.min.js" | relURL }}"></script>
-<script defer src="{{ "katex/auto-render.min.js" | relURL }}"></script>
+<link rel="stylesheet" href="{{ " katex/katex.min.css" | relURL }}" />
+<script defer src="{{ " katex/katex.min.js" | relURL }}"></script>
+<script defer src="{{ " katex/auto-render.min.js" | relURL }}"></script>
 <script>
   document.addEventListener("DOMContentLoaded", function () {
     let katexPrefix = "language-math";
@@ -54,10 +54,10 @@
 
     renderMathInElement(document.body, {
       delimiters: [
-        {left: "$$", right: "$$", display: true},
-        {left: "$", right: "$", display: false},
-        {left: "\\(", right: "\\)", display: false},
-        {left: "\\[", right: "\\]", display: true}
+        { left: "$$", right: "$$", display: true },
+        { left: "$", right: "$", display: false },
+        { left: "\\(", right: "\\)", display: false },
+        { left: "\\[", right: "\\]", display: true }
       ]
     });
   });
@@ -134,3 +134,85 @@
   }
 </script>
 -->
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    // Remove the "disabled" attribute from checkboxes
+    document.querySelectorAll('input[type="checkbox"]').forEach(function (checkbox) {
+      checkbox.removeAttribute('disabled');
+    });
+  });
+</script>
+
+<script>
+  // Add a click event listener to all task list items
+  document.querySelectorAll('ul li').forEach(function (task) {
+    task.addEventListener('click', function () {
+      // Toggle the class 'completed' on the clicked task
+      task.classList.toggle('completed');
+      var checkbox = task.querySelector('input[type="checkbox"]');
+
+      console.log(window.location.pathname)
+      console.log(task.textContent)
+      const url = 'http://felixdu.dynamic.nsn-net.net/api/update-checkbox';
+      const postData = {
+        path: window.location.pathname,
+        text: task.textContent,
+        checked: checkbox.checked
+      };
+
+      // Configuration for the fetch request
+      const fetchOptions = {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json', // adjust the content type based on your needs
+          // add any other headers as needed
+        },
+        body: JSON.stringify(postData) // convert data to JSON format
+      };
+
+      // Use fetch to send the POST request
+      fetch(url, fetchOptions)
+        .then(response => {
+          if (!response.ok) {
+            throw new Error('Network response was not ok');
+          }
+          return response.json(); // assuming the server responds with JSON
+        })
+        .then(data => {
+          console.log('POST request successful, response:', data);
+        })
+        .catch(error => {
+          console.error('Error during POST request:', error);
+        });
+    });
+
+    //      // Toggle the checkbox status
+    //      var checkbox = task.querySelector('input[type="checkbox"]');
+    //      checkbox.addEventListener('change', function () {
+    //        console.log(window.location.pathname)
+    //        console.log(task.textContent)
+    //        // If checked, make an HTTP GET request
+    //        fetch('http://felixdu.dynamic.nsn-net.net/api/update-checkbox', {
+    //          method: 'GET',
+    //          headers: {
+    //            'Content-Type': 'application/json', // adjust the content type if needed
+    //            // add any other headers as needed
+    //          },
+    //          // you can add a request body if needed (e.g., JSON.stringify({ key: 'value' }))
+    //        })
+    //          .then(response => {
+    //            if (!response.ok) {
+    //              throw new Error('Network response was not ok');
+    //            }
+    //            // handle the response as needed
+    //            console.log('HTTP request successful');
+    //          })
+    //          .catch(error => {
+    //            // handle errors
+    //            console.error('Error during HTTP request:', error);
+    //          });
+    //      });
+    //      //checkbox.checked = !checkbox.checked;
+  });
+</script>

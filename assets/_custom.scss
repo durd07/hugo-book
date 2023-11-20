@@ -49,16 +49,22 @@
   }
 }
 
-.mindmap {
-  display: block;
-  width: 100vw;
-  height: 100vh;
-}
+//.mindmap {
+//  display: block;
+//  width: 100%;
+//  //height: 500vh;
+//}
+//
+//#mindmap {
+//  display: block;
+//  width: 100%;
+//  //height: 500vh;
+//}
 
-#mindmap {
+svg.markmap {
   display: block;
-  width: 100vw;
-  height: 100vh;
+  width: 100%;
+  height: 96vh;
 }
 
 /*!
