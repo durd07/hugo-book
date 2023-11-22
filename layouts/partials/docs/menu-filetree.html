@@ -1,3 +1,4 @@
+<div class="menu-filetree">
 {{ $bookSection := default "docs" .Site.Params.BookSection  }}
 {{ if eq $bookSection "*" }}
   {{ $bookSection = "/" }}{{/* Backward compatibility */}}
@@ -52,3 +53,4 @@
     <span><i class="{{ $icon }}"></i>&nbsp;{{- partial "docs/title" .Page -}}</span>
   {{ end }}
 {{ end }}
+</div>
