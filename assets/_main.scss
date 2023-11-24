@@ -181,6 +181,13 @@ body[dir="rtl"] .book-menu {
   padding-right: 8%;
 }
 
+@media (max-width: 80rem) {
+ .book-page {
+  padding-left: $padding-16;
+  padding-right: $padding-16;
+ } 
+}
+
 .book-post {
   margin-bottom: $padding-16 * 3;
 }
