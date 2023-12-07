@@ -38,7 +38,6 @@
 
 <!-- Katex -->
 {{ if or .Params.katex .Site.Params.katex }}
-{{- if not (.Page.Scratch.Get "katex") -}}
 <!-- Include katext only first time -->
 <link rel="stylesheet" href="{{ "katex/katex.min.css" | relURL }}" />
 <script defer src="{{ "katex/katex.min.js" | relURL }}"></script>
@@ -62,8 +61,6 @@
     });
   });
 </script>
-{{- .Page.Scratch.Set "katex" true -}}
-{{- end -}}
 {{ end }}
 
 <script>
