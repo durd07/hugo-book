@@ -15,10 +15,11 @@
   h5,
   h6 {
     font-weight: bold;
-    //color:steelblue;
-    color: var(--gray-300);
-    line-height: 1.5;
-    margin-top: 1.5em;
+    // color:steelblue;
+    color: var(--color-link);
+    // color: var(--gray-300);
+    line-height: 3;
+    // margin-top: 2em;
     margin-bottom: $padding-16;
 
     a.anchor {
@@ -38,6 +39,7 @@
     text-align: center;
     //line-height: 3;
     margin-top: 3em;
+    font-weight: bold;
     //padding-top: 1em;
     color: aliceblue;
     padding: 80px;
