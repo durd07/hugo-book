@@ -371,9 +371,9 @@ body[dir="rtl"] .book-menu {
   margin: $padding-16 0;
   border-bottom: 1px solid transparent;
 
-  // fa-solid magnifying glass inside the input, acting as a placeholder.
-  // Anchored to the input's vertical centre (16px, same as the spinner) so it
-  // stays put when the results list expands the container below.
+  // fa-solid magnifying glass inside the input. Stays visible at all times
+  // (it does NOT hide on focus). Anchored to the input's vertical centre (16px,
+  // same as the spinner) so it stays put when the results list expands below.
   &::before {
     content: "\f002";
     font-family: "Font Awesome 6 Free";
@@ -386,18 +386,13 @@ body[dir="rtl"] .book-menu {
     color: var(--body-font-color);
     opacity: 0.5;
     pointer-events: none;
-    transition: opacity 0.15s ease;
-  }
-
-  // Hide the icon like a placeholder once the field is focused.
-  &:focus-within::before {
-    opacity: 0;
   }
 
   input {
     width: 100%;
     padding: $padding-8;
-    padding-inline-start: $padding-16 + $padding-8;
+    // Leave a clear gap after the magnifying-glass icon before the text starts.
+    padding-inline-start: $padding-16 + $padding-16;
 
     border: 0;
     border-radius: $border-radius;
