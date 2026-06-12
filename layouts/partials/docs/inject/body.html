@@ -312,85 +312,52 @@
 -->
 
 <script>
-  document.addEventListener('DOMContentLoaded', function () {
-    // Remove the "disabled" attribute from checkboxes
-    document.querySelectorAll('input[type="checkbox"]').forEach(function (checkbox) {
-      checkbox.removeAttribute('disabled');
-    });
-  });
-</script>
+  (function () {
+    function checkboxApiBase() {
+      if (window.WIKI_CHECKBOX_API_BASE) {
+        return window.WIKI_CHECKBOX_API_BASE.replace(/\/+$/, "");
+      }
+      if (["localhost", "127.0.0.1", "0.0.0.0"].indexOf(location.hostname) !== -1 && location.port === "8080") {
+        return "/api";
+      }
+      if (["localhost", "127.0.0.1", "0.0.0.0"].indexOf(location.hostname) !== -1) {
+        return "http://localhost:8000";
+      }
+      return "/api";
+    }
 
-<script>
-  // Add a click event listener to all task list items
-  document.querySelectorAll('ul li').forEach(function (task) {
-    task.addEventListener('click', function () {
-      // Toggle the class 'completed' on the clicked task
-      task.classList.toggle('completed');
-      var checkbox = task.querySelector('input[type="checkbox"]');
+    document.addEventListener("DOMContentLoaded", function () {
+      var checkboxes = Array.prototype.slice.call(
+        document.querySelectorAll(".markdown li input[type='checkbox']")
+      );
 
-      console.log(window.location.pathname)
-      console.log(task.textContent)
-      const url = 'http://felixdu.dynamic.nsn-net.net/api/update-checkbox';
-      const postData = {
-        path: window.location.pathname,
-        text: task.textContent,
-        checked: checkbox.checked
-      };
+      checkboxes.forEach(function (checkbox, index) {
+        checkbox.disabled = false;
+        checkbox.addEventListener("change", function () {
+          var previous = !checkbox.checked;
+          checkbox.disabled = true;
 
-      // Configuration for the fetch request
-      const fetchOptions = {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json', // adjust the content type based on your needs
-          // add any other headers as needed
-        },
-        body: JSON.stringify(postData) // convert data to JSON format
-      };
-
-      // Use fetch to send the POST request
-      fetch(url, fetchOptions)
-        .then(response => {
-          if (!response.ok) {
-            throw new Error('Network response was not ok');
-          }
-          return response.json(); // assuming the server responds with JSON
-        })
-        .then(data => {
-          console.log('POST request successful, response:', data);
-        })
-        .catch(error => {
-          console.error('Error during POST request:', error);
+          fetch(checkboxApiBase() + "/update-checkbox", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              path: window.location.pathname,
+              index: index,
+              checked: checkbox.checked
+            })
+          }).then(function (response) {
+            if (!response.ok) throw new Error("Could not update checkbox");
+            return response.json();
+          }).catch(function (error) {
+            checkbox.checked = previous;
+            console.error(error);
+          }).finally(function () {
+            checkbox.disabled = false;
+          });
         });
+      });
     });
-
-    //      // Toggle the checkbox status
-    //      var checkbox = task.querySelector('input[type="checkbox"]');
-    //      checkbox.addEventListener('change', function () {
-    //        console.log(window.location.pathname)
-    //        console.log(task.textContent)
-    //        // If checked, make an HTTP GET request
-    //        fetch('http://felixdu.dynamic.nsn-net.net/api/update-checkbox', {
-    //          method: 'GET',
-    //          headers: {
-    //            'Content-Type': 'application/json', // adjust the content type if needed
-    //            // add any other headers as needed
-    //          },
-    //          // you can add a request body if needed (e.g., JSON.stringify({ key: 'value' }))
-    //        })
-    //          .then(response => {
-    //            if (!response.ok) {
-    //              throw new Error('Network response was not ok');
-    //            }
-    //            // handle the response as needed
-    //            console.log('HTTP request successful');
-    //          })
-    //          .catch(error => {
-    //            // handle errors
-    //            console.error('Error during HTTP request:', error);
-    //          });
-    //      });
-    //      //checkbox.checked = !checkbox.checked;
-  });
+  })();
 </script>
 
 <!-- Light/dark theme toggle -->
