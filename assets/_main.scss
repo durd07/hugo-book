@@ -141,6 +141,13 @@ $sidebar-width-default: 22rem;
     background: var(--gray-100);
 
     @include fixed;
+
+    nav {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      min-height: 0;
+    }
   }
 
   // Wide screens: frame the sidebar as a floating bordered card, mirroring the
@@ -165,9 +172,11 @@ $sidebar-width-default: 22rem;
   }
 
   .menu-filetree {
+    flex: 1 1 auto;
     overflow: auto !important;
     min-height: 150px;
-    max-height: calc(100vh - 500px);
+    max-height: none;
+    padding-bottom: $padding-8;
   }
 
 
