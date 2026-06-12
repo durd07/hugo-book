@@ -157,10 +157,10 @@ $sidebar-width-default: 22rem;
       inset-inline-start: $padding-16;
       width: calc(var(--sidebar-width, #{$sidebar-width-default}) - #{$padding-16 * 2});
 
-      background: var(--body-background);
+      background: var(--card-background);
       border: $padding-1 solid var(--gray-200);
       border-radius: $border-radius-lg;
-      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.35);
+      box-shadow: var(--card-shadow);
     }
   }
 
@@ -189,6 +189,9 @@ $sidebar-width-default: 22rem;
   li > label {
     padding: $padding-8 ($padding-8 + $padding-4);
     border-radius: $border-radius;
+    // Muted nav colour so the long list of links isn't a harsh wall of text
+    // (most noticeable in the light theme). Active rows still get the accent.
+    color: var(--menu-font-color);
     transition: background-color 0.15s ease, color 0.15s ease;
   }
 

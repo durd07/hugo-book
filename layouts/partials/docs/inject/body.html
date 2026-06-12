@@ -392,3 +392,33 @@
     //      //checkbox.checked = !checkbox.checked;
   });
 </script>
+
+<!-- Light/dark theme toggle -->
+<script>
+  (function () {
+    var btn = document.getElementById("theme-toggle");
+    if (!btn) return;
+
+    function currentTheme() {
+      return document.documentElement.getAttribute("data-theme") || "dark";
+    }
+
+    function updateLabel(theme) {
+      var label = theme === "dark" ? "Switch to light theme" : "Switch to dark theme";
+      btn.setAttribute("aria-label", label);
+      btn.setAttribute("title", label);
+    }
+
+    function applyTheme(theme) {
+      document.documentElement.setAttribute("data-theme", theme);
+      try { localStorage.setItem("color-theme", theme); } catch (e) {}
+      updateLabel(theme);
+    }
+
+    updateLabel(currentTheme());
+
+    btn.addEventListener("click", function () {
+      applyTheme(currentTheme() === "dark" ? "light" : "dark");
+    });
+  })();
+</script>

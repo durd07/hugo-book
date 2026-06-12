@@ -96,7 +96,7 @@
 
   pre {
     padding: $padding-16;
-    background: var(--gray-100);
+    background: var(--code-background);
     border-radius: $border-radius;
     overflow-x: auto;
 
@@ -150,9 +150,9 @@
     padding: 0;
     margin: 0;
 
-    color: #e6edf3;
-    background: rgba(110, 118, 129, 0.25);
-    border: $padding-1 solid rgba(240, 246, 252, 0.1);
+    color: var(--body-font-color);
+    background: var(--gray-200);
+    border: $padding-1 solid var(--gray-200);
     border-radius: $border-radius;
     cursor: pointer;
     opacity: 0;
@@ -165,11 +165,11 @@
     }
 
     &:hover {
-      background: rgba(110, 118, 129, 0.45);
+      background: var(--gray-500);
     }
 
     &:focus-visible {
-      outline: $padding-1 solid rgba(240, 246, 252, 0.5);
+      outline: $padding-1 solid var(--color-link);
       outline-offset: $padding-1;
     }
 

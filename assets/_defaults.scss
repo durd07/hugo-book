@@ -30,21 +30,32 @@ $hint-colors: (
 
 // Themes
 @mixin theme-light {
-  --gray-100: #f8f9fa;
-  --gray-200: #e9ecef;
-  --gray-500: #adb5bd;
+  // Soft, cohesive light palette built on cool-grey neutrals that harmonise with
+  // the blue accent. The main reading column (body background) is the brightest
+  // surface; the sidebar / TOC sit on a gentler grey so they read as secondary.
+  --gray-100: #e1e6ec; // inset surfaces: search field, code blocks, home-page panels, scrollbar
+  --gray-200: #d4dae2; // borders, dividers, inline-code chip
+  --gray-500: #909aa6; // muted icons / secondary text
 
-  --color-link: #0055bb;
-  --color-visited-link: #8440f1;
+  --color-link: #3a72b8; // calm steel-blue accent — clear but not jarring
+  --color-visited-link: #7a5dbe; // muted violet
 
-  --body-background: white;
-  --body-font-color: black;
+  --body-background: #fbfcfd; // main reading surface — the brightest area
+  --card-background: #f7f7f7; // sidebar + TOC — same neutral grey as the code blocks
+  --code-background: #f7f7f7; // code blocks — matches the chroma light background
+  --panel-background: var(--card-background); // home-page panels — match the cards (light only)
+  --hr-color: var(--gray-200); // horizontal rules match the border colour
+  --body-font-color: #3b454e; // soft slate ink — gentler than near-black
+  --menu-font-color: #5a6573; // muted slate for the sidebar nav rows (less harsh)
 
   --icon-filter: none;
 
   --hint-color-info: #6bf;
   --hint-color-warning: #fd6;
   --hint-color-danger: #f66;
+
+  --panel-hover: #e2eaf4; // soft cool-blue hover for home-page panels
+  --card-shadow: 0 4px 16px rgba(15, 23, 42, 0.05); // light, soft elevation
 }
 
 @mixin theme-dark {
@@ -56,11 +67,19 @@ $hint-colors: (
   --color-visited-link: #b88dff;
 
   --body-background: #343a40;
+  --card-background: #343a40; // same as the page — cards rely on border + shadow (unchanged look)
+  --code-background: var(--gray-100); // plain code blocks keep the original subtle overlay (dark unchanged)
+  --panel-background: var(--gray-100); // home-page panels keep the original subtle overlay (dark unchanged)
+  --hr-color: #696969; // dimgray — original horizontal-rule colour (dark unchanged)
   --body-font-color: #e9ecef;
+  --menu-font-color: #e9ecef; // = body, dark sidebar unchanged
 
   --icon-filter: brightness(0) invert(1);
 
   --hint-color-info: #6bf;
   --hint-color-warning: #fd6;
   --hint-color-danger: #f66;
+
+  --panel-hover: #336699; // existing accent for home-page panel hover
+  --card-shadow: 0 8px 30px rgba(0, 0, 0, 0.35); // unchanged dark elevation
 }

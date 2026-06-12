@@ -9,7 +9,7 @@
 }
 
 .grid-container>div {
-  background-color: rgba(255, 255, 255, 0.1);
+  background-color: var(--panel-background); // matches the sidebar/TOC tone in light; original overlay in dark
   text-align: center;
   padding: 10px 0;
   font-size: 16px;
@@ -17,8 +17,24 @@
   transition: background-color 0.15s ease;
 
   &:hover {
-    background-color: #336699;
+    background-color: var(--panel-hover);
   }
+}
+
+// Outline the home-page panels in light mode only — their fill (#f7f7f7) is nearly
+// the page colour, so a border keeps them defined. Dark mode keeps its original
+// borderless look (the overlay fill already stands out), so its appearance is unchanged.
+:root[data-theme="light"] .grid-container>div,
+:root[data-theme="light"] .book-columns>div {
+  border: $padding-1 solid var(--gray-200);
+}
+
+// Footer / sidebar horizontal rules. Theme-aware: matches the border colour in
+// light, keeps the original dimgray in dark.
+.book-hr {
+  height: $padding-1;
+  border: 0;
+  background: var(--hr-color);
 }
 
 .grid-container>div>a>img {
@@ -47,6 +63,55 @@
     height: 2em !important;
     width: 2em !important;
     margin-inline-end: $padding-8;
+    vertical-align: middle;
+  }
+}
+
+// Light/dark theme switch — sits inline in the social-icon row, same size as them.
+.theme-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  vertical-align: middle;
+  padding: 0;
+  margin: 0;
+
+  color: var(--body-font-color);
+  background: none;
+  border: 0;
+  cursor: pointer;
+  line-height: 1;
+  opacity: 0.85;
+  transition: color 0.15s ease, opacity 0.15s ease;
+
+  // Simple line icons (crescent / plain sun) sized to sit with the social icons.
+  svg {
+    width: 1.5em;
+    height: 1.5em;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  &:hover {
+    opacity: 1;
+    color: var(--color-link);
+  }
+
+  // Show only the icon for the currently active theme.
+  .theme-icon-light {
+    display: none;
+  }
+}
+
+:root[data-theme="light"] .theme-toggle {
+  .theme-icon-dark {
+    display: none;
+  }
+  .theme-icon-light {
+    display: inline-block;
   }
 }
 
@@ -8873,7 +8938,7 @@ $toc-panel-width: 20rem;
 
   border: $padding-1 solid var(--gray-200);
   border-radius: 50%; // intentional circle
-  background: var(--body-background);
+  background: var(--card-background);
   color: var(--body-font-color);
   cursor: pointer;
 
@@ -8906,10 +8971,10 @@ $toc-panel-width: 20rem;
   width: $toc-panel-width;
   max-width: calc(100vw - #{$padding-16 * 2});
 
-  background: var(--body-background);
+  background: var(--card-background);
   border: $padding-1 solid var(--gray-200);
   border-radius: $border-radius-lg;
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.35);
+  box-shadow: var(--card-shadow);
 
   // hidden by default; slides in from the right edge
   opacity: 0;

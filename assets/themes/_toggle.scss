@@ -1,0 +1,33 @@
+// Runtime light/dark theme switch.
+//
+// The toggle button writes a `data-theme` attribute onto <html> and persists
+// the choice in localStorage (see docs/inject/head.html + docs/inject/body.html).
+// No attribute => dark, which matches the site's original appearance.
+
+:root,
+:root[data-theme="dark"] {
+  @include theme-dark;
+}
+
+:root[data-theme="light"] {
+  @include theme-light;
+}
+
+// Syntax highlighting is class-based (markup.highlight.noClasses = false in
+// config.toml), so we ship both palettes and gate them on the same data-theme.
+// Dark is matched with :not([data-theme="light"]) so the two styles stay
+// mutually exclusive — that stops dark token colours leaking into light mode
+// for tokens that only one of the two chroma styles happens to define.
+:root:not([data-theme="light"]) {
+  @import "chroma-dark";
+}
+
+:root[data-theme="light"] {
+  @import "chroma-light";
+
+  // The light chroma background sits very close to the page colour, so frame
+  // code blocks to keep them distinct (dark mode already contrasts strongly).
+  .markdown pre {
+    border: $padding-1 solid var(--gray-200);
+  }
+}
