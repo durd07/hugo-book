@@ -103,8 +103,9 @@ ul.pagination {
 // --sidebar-width custom property (drag handle below, persisted to localStorage).
 $sidebar-width-default: 22rem;
 
-// Drag handle for resizing the sidebar (wide screens only). Lives in the 16px
-// gutter at the card's right edge and rewrites --sidebar-width as you drag.
+// Resizing the sidebar: an invisible drag strip sits in the gutter at the
+// card's right edge (wide screens only). Hovering the edge shows a col-resize
+// cursor and you drag it directly — no visible handle or icon.
 .menu-resizer {
   display: none;
 }
@@ -119,25 +120,6 @@ $sidebar-width-default: 22rem;
     width: $padding-16;
     z-index: 42;
     cursor: col-resize;
-
-    &::after {
-      content: "";
-      position: absolute;
-      top: 50%;
-      inset-inline-start: 50%;
-      transform: translate(-50%, -50%);
-      width: 2px;
-      height: 2.5rem;
-      border-radius: 2px;
-      background: var(--gray-200);
-      transition: background-color 0.15s ease, height 0.15s ease;
-    }
-
-    &:hover::after,
-    &.dragging::after {
-      background: var(--color-link);
-      height: 3.5rem;
-    }
   }
 
   body.sidebar-resizing {
@@ -389,9 +371,33 @@ body[dir="rtl"] .book-menu {
   margin: $padding-16 0;
   border-bottom: 1px solid transparent;
 
+  // fa-solid magnifying glass inside the input, acting as a placeholder.
+  // Anchored to the input's vertical centre (16px, same as the spinner) so it
+  // stays put when the results list expands the container below.
+  &::before {
+    content: "\f002";
+    font-family: "Font Awesome 6 Free";
+    font-weight: 900;
+    position: absolute;
+    top: $padding-16;
+    inset-inline-start: $padding-8 + $padding-4;
+    transform: translateY(-50%);
+    font-size: 0.85em;
+    color: var(--body-font-color);
+    opacity: 0.5;
+    pointer-events: none;
+    transition: opacity 0.15s ease;
+  }
+
+  // Hide the icon like a placeholder once the field is focused.
+  &:focus-within::before {
+    opacity: 0;
+  }
+
   input {
     width: 100%;
     padding: $padding-8;
+    padding-inline-start: $padding-16 + $padding-8;
 
     border: 0;
     border-radius: $border-radius;

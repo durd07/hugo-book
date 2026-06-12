@@ -3,10 +3,9 @@
   display: grid;
   //grid-template-columns: auto auto auto auto;
   grid-template-columns: 1fr 1fr 1fr 1fr;
-  grid-column-gap: 30px;
-  grid-row-gap: 10px;
+  gap: 16px; // horizontal & vertical panel spacing kept identical
   //background-color: #666;
-  padding: 10px;
+  padding: 10px 0; // no side padding so panels align with the H1 banner edges
 }
 
 .grid-container>div {
@@ -14,6 +13,8 @@
   text-align: center;
   padding: 10px 0;
   font-size: 16px;
+  border-radius: $border-radius;
+  transition: background-color 0.15s ease;
 
   &:hover {
     background-color: #336699;
