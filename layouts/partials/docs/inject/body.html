@@ -224,6 +224,83 @@
   })();
 </script>
 
+<script>
+  // Sidebar: drag-to-resize its width (wide screens), persisted across page loads.
+  // Defaults to the TOC panel's footprint; double-click the handle to reset.
+  (function () {
+    var KEY = 'sidebar.width';
+    var GUTTER = 16; // px gap between the screen edge and the sidebar card
+    var root = document.documentElement;
+    var mq = window.matchMedia('(min-width: 60rem)');
+
+    function bounds() {
+      return { min: 240, max: Math.min(640, Math.round(window.innerWidth * 0.5)) };
+    }
+    function clamp(v) { var b = bounds(); return Math.max(b.min, Math.min(b.max, v)); }
+    function apply(px) { root.style.setProperty('--sidebar-width', clamp(px) + 'px'); }
+
+    // Restore a previously chosen width.
+    try {
+      var saved = parseInt(localStorage.getItem(KEY), 10);
+      if (saved) apply(saved);
+    } catch (e) {}
+
+    function init() {
+      if (document.querySelector('.menu-resizer')) return;
+      if (!document.querySelector('.book-menu')) return;
+
+      var handle = document.createElement('div');
+      handle.className = 'menu-resizer';
+      handle.setAttribute('role', 'separator');
+      handle.setAttribute('aria-orientation', 'vertical');
+      handle.title = 'Drag to resize \u00b7 double-click to reset';
+      document.body.appendChild(handle);
+
+      var dragging = false;
+
+      function onMove(e) {
+        if (!dragging) return;
+        var x = e.clientX != null ? e.clientX
+          : (e.touches && e.touches[0] ? e.touches[0].clientX : 0);
+        apply(x + GUTTER); // the card's right edge tracks the cursor
+        if (e.cancelable) e.preventDefault();
+      }
+      function onUp() {
+        if (!dragging) return;
+        dragging = false;
+        handle.classList.remove('dragging');
+        document.body.classList.remove('sidebar-resizing');
+        window.removeEventListener('pointermove', onMove);
+        window.removeEventListener('pointerup', onUp);
+        var cur = parseInt(getComputedStyle(root).getPropertyValue('--sidebar-width'), 10);
+        try { if (cur) localStorage.setItem(KEY, cur); } catch (e) {}
+      }
+
+      handle.addEventListener('pointerdown', function (e) {
+        if (!mq.matches) return;
+        dragging = true;
+        handle.classList.add('dragging');
+        document.body.classList.add('sidebar-resizing');
+        window.addEventListener('pointermove', onMove);
+        window.addEventListener('pointerup', onUp);
+        if (e.cancelable) e.preventDefault();
+      });
+
+      // Double-click restores the default width.
+      handle.addEventListener('dblclick', function () {
+        root.style.removeProperty('--sidebar-width');
+        try { localStorage.removeItem(KEY); } catch (e) {}
+      });
+    }
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', init);
+    } else {
+      init();
+    }
+  })();
+</script>
+
 <!--
 <button style="position: fixed ! important; right: 0px; bottom: 0px;" onclick="toggleFullScreen()">Fullscreen</button>
 <script>

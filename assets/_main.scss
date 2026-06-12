@@ -98,6 +98,54 @@ ul.pagination {
   }
 }
 
+// Default sidebar column width — sized so the visible card (after its two 16px
+// gutters) matches the TOC drawer's 20rem panel. Overridable at runtime via the
+// --sidebar-width custom property (drag handle below, persisted to localStorage).
+$sidebar-width-default: 22rem;
+
+// Drag handle for resizing the sidebar (wide screens only). Lives in the 16px
+// gutter at the card's right edge and rewrites --sidebar-width as you drag.
+.menu-resizer {
+  display: none;
+}
+
+@media screen and (min-width: $mobile-breakpoint) {
+  .menu-resizer {
+    display: block;
+    position: fixed;
+    top: $padding-16;
+    bottom: $padding-16;
+    inset-inline-start: calc(var(--sidebar-width, #{$sidebar-width-default}) - #{$padding-16});
+    width: $padding-16;
+    z-index: 42;
+    cursor: col-resize;
+
+    &::after {
+      content: "";
+      position: absolute;
+      top: 50%;
+      inset-inline-start: 50%;
+      transform: translate(-50%, -50%);
+      width: 2px;
+      height: 2.5rem;
+      border-radius: 2px;
+      background: var(--gray-200);
+      transition: background-color 0.15s ease, height 0.15s ease;
+    }
+
+    &:hover::after,
+    &.dragging::after {
+      background: var(--color-link);
+      height: 3.5rem;
+    }
+  }
+
+  body.sidebar-resizing {
+    cursor: col-resize;
+    user-select: none;
+  }
+}
+
 .book-menu {
   flex: 0 0 $menu-width;
   font-size: $font-size-14;
@@ -111,6 +159,27 @@ ul.pagination {
     background: var(--gray-100);
 
     @include fixed;
+  }
+
+  // Wide screens: frame the sidebar as a floating bordered card, mirroring the
+  // TOC drawer (same border + large radius + shadow, inset from the edges so the
+  // rounded corners are visible). Mobile keeps the flush slide-in drawer.
+  @media screen and (min-width: $mobile-breakpoint) {
+    // Reserve the column from --sidebar-width so it can be dragged wider /
+    // narrower; defaults to the TOC panel's footprint.
+    flex-basis: var(--sidebar-width, #{$sidebar-width-default});
+
+    .book-menu-content {
+      top: $padding-16;
+      bottom: $padding-16;
+      inset-inline-start: $padding-16;
+      width: calc(var(--sidebar-width, #{$sidebar-width-default}) - #{$padding-16 * 2});
+
+      background: var(--body-background);
+      border: $padding-1 solid var(--gray-200);
+      border-radius: $border-radius-lg;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.35);
+    }
   }
 
   .menu-filetree {
