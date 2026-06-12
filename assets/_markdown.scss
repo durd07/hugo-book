@@ -104,6 +104,78 @@
     }
   }
 
+  // The highlighter adds tabindex="0" to code blocks, so the global ":focus"
+  // rule (see _main.scss) draws distracting outline rings when a block or its
+  // copy button is clicked. Suppress them (keyboard focus handled below).
+  .highlight:focus,
+  .highlight:focus-within,
+  .highlight pre:focus,
+  pre:focus,
+  pre code:focus,
+  .copy-code-button:focus {
+    outline: none;
+  }
+
+  // Copy-to-clipboard button rendered on code blocks by clipboard.js
+  .code-copy-container {
+    position: relative;
+
+    &:hover .copy-code-button,
+    .copy-code-button:focus-visible,
+    .copy-code-button.copied {
+      opacity: 1;
+    }
+  }
+
+  // Keep the button discoverable on touch devices that have no hover
+  @media (hover: none) {
+    .copy-code-button {
+      opacity: 1;
+    }
+  }
+
+  .copy-code-button {
+    position: absolute;
+    top: $padding-8;
+    inset-inline-end: $padding-8;
+    z-index: 1;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.4rem;
+    height: 1.4rem;
+    padding: 0;
+    margin: 0;
+
+    color: #e6edf3;
+    background: rgba(110, 118, 129, 0.25);
+    border: $padding-1 solid rgba(240, 246, 252, 0.1);
+    border-radius: $border-radius;
+    cursor: pointer;
+    opacity: 0;
+    transition: opacity 0.15s ease-in-out, background 0.15s ease-in-out, color 0.15s ease-in-out;
+
+    svg {
+      display: block;
+      width: 0.8rem;
+      height: 0.8rem;
+    }
+
+    &:hover {
+      background: rgba(110, 118, 129, 0.45);
+    }
+
+    &:focus-visible {
+      outline: $padding-1 solid rgba(240, 246, 252, 0.5);
+      outline-offset: $padding-1;
+    }
+
+    &.copied {
+      color: #3fb950;
+    }
+  }
+
   p {
     word-wrap:break-word;
   }
