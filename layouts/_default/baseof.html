@@ -37,11 +37,19 @@
     </div>
 
     {{ if default true (default .Site.Params.BookToC .Params.BookToC) }}
-    <div class="toc-menu-toggle"> <img src="/svg/toc.svg" class="toc-button-toggle"></img>
-      <div class="toc-menu-items">
-        <h2 style="color: cadetblue; font-weight: bold;"><center>Table of contents</center></h2>
-      {{ template "toc" . }} <!-- Table of Contents -->
-      </div>
+    <div class="toc-float" id="toc-float">
+      <aside class="toc-panel" id="toc-panel" aria-label="Table of contents">
+        <div class="toc-panel-header">
+          <span class="toc-panel-title">On this page</span>
+          <button type="button" class="toc-panel-close" id="toc-close" aria-label="Close table of contents">&times;</button>
+        </div>
+        <div class="toc-panel-body">
+          {{ template "toc" . }} <!-- Table of Contents -->
+        </div>
+      </aside>
+      <button type="button" class="toc-fab" id="toc-fab" aria-label="Toggle table of contents" aria-expanded="false" title="Table of contents">
+        <img src="{{ "svg/toc.svg" | relURL }}" class="toc-fab-icon book-icon" alt="" />
+      </button>
     </div>
     {{ end }}
   </main>

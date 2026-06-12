@@ -11,6 +11,7 @@
   {{ range . }}
   <li>
     <a href="{{ .URL }}" {{ with .Params.class }}class="{{ . }}"{{ end }} {{ if not .Page }}target="_blank" rel="noopener"{{ end }}>
+      {{- with .Params.icon }}<i class="{{ . }}"></i>&nbsp;{{ end -}}
       {{- .Pre -}}
       {{ with .Page }}
         {{ partial "docs/title" .Page }}

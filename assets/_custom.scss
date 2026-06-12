@@ -8846,107 +8846,251 @@ svg.markmap {
   unicode-range: u+f041, u+f047, u+f065-f066, u+f07d-f07e, u+f080, u+f08b, u+f08e, u+f090, u+f09a, u+f0ac, u+f0ae, u+f0b2, u+f0d0, u+f0d6, u+f0e4, u+f0ec, u+f10a-f10b, u+f123, u+f13e, u+f148-f149, u+f14c, u+f156, u+f15e, u+f160-f161, u+f163, u+f175-f178, u+f195, u+f1f8, u+f219, u+f27a
 }
 
-/* ScrollSpy active styles (see JS tab for activation) */
-/*
-#TableOfContents li.active > a {
-	color: var(--gray-200);
-	font-weight: bold;
-}
-*/
+/* =========================================================================
+   Table of contents
+   - Collapsed: a floating ball ("小球") in the bottom-right corner.
+   - Open: a drawer docked on the right side of the screen.
+   - Follows the current section via scroll-spy (see inject/body.html).
+   Everything is themed with the site CSS variables so light/dark stay unified.
+   ========================================================================= */
 
-///* Sidebar Navigation */
-//#TableOfContents {
-//	padding-left: 10px;
-//	border-left: 1px solid var(--gray-200);
-//}
-//
-//#TableOfContents a {
-//	text-decoration: none;
-//	display: block;
-//	padding: .125rem 0;
-//	color: #ccc;
-//	transition: all 50ms ease-in-out; /* 💡 This small transition makes setting of the active state smooth */
-//}
+$toc-panel-width: 20rem;
 
-.toc-button-toggle {
+// --- Floating action button (collapsed state) ---
+.toc-fab {
   position: fixed;
-  bottom: 20px;
-  right: 20px;
-  width: 60px;
-  height: 60px;
-  border-radius: 50%;
-  background-color: antiquewhite;
-  color: #336699;
-  font-weight: bolder;
-  text-align: center;
-  line-height: 60px;
-  cursor: pointer;
-  padding: 10px;
-}
+  bottom: $padding-16 * 1.5;
+  right: $padding-16 * 1.5;
+  z-index: 40;
 
-.toc-menu-items {
-  max-height: calc(100% - 100px);
-  overflow: auto;
-  display: none;
-  list-style-type: none;
-  position: fixed;
-  bottom: 80px;
-  right: 10px;
-  width: 400px;
-  padding: 5px;
-  margin: 0;
-  background-color: antiquewhite;
-  border-radius: 5px;
-}
-
-.toc-menu-toggle:hover .toc-menu-items {
-  display: block;
-}
-
-.toc-menu-items ul {
-  list-style-type: none;
-  /* Remove default list styles */
-  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 3.25rem;
+  height: 3.25rem;
   padding: 0;
+
+  border: $padding-1 solid var(--gray-200);
+  border-radius: 50%; // intentional circle
+  background: var(--body-background);
+  color: var(--body-font-color);
+  cursor: pointer;
+
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.25);
+  transition: transform 0.18s ease, background-color 0.18s ease,
+    border-color 0.18s ease, opacity 0.18s ease, visibility 0.18s ease;
+
+  .toc-fab-icon {
+    width: 1.85rem;
+    height: 1.85rem;
+  }
+
+  &:hover {
+    transform: translateY(-2px);
+    border-color: var(--color-link);
+    background: var(--gray-100);
+  }
 }
 
-.toc-menu-items li {
-  padding: 0px;
-  padding-left: 15px;
-  text-indent: -5px;
-  border-left: 8px solid antiquewhite;
+// --- Drawer panel (open state) ---
+.toc-panel {
+  position: fixed;
+  top: $padding-16;
+  bottom: $padding-16;
+  right: $padding-16;
+  z-index: 41;
+
+  display: flex;
+  flex-direction: column;
+  width: $toc-panel-width;
+  max-width: calc(100vw - #{$padding-16 * 2});
+
+  background: var(--body-background);
+  border: $padding-1 solid var(--gray-200);
+  border-radius: $border-radius-lg;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.35);
+
+  // hidden by default; slides in from the right edge
+  opacity: 0;
+  visibility: hidden;
+  transform: translateX(calc(100% + #{$padding-16 * 2}));
+  transition: transform 0.22s ease, opacity 0.22s ease, visibility 0.22s ease;
 }
 
-.toc-menu-items li a {
-  display: block;
-  padding: 5px;
-  text-decoration: none;
-  color: cadetblue;
+.toc-panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: ($padding-8 + $padding-4) $padding-16;
+  border-bottom: $padding-1 solid var(--gray-200);
 }
 
-.toc-menu-items li:hover {
-  border-left: 8px solid cadetblue;
+.toc-panel-title {
+  font-size: $font-size-14;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--body-font-color);
+  opacity: 0.7;
 }
 
-.toc-menu-items li:not(:has(ul)):hover {
-  background-color: #333;
-  font-weight: bold;
-  color: cadetblue;
+.toc-panel-close {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.75rem;
+  height: 1.75rem;
+  padding: 0;
+  font-size: 1.35rem;
+  line-height: 1;
+  color: var(--body-font-color);
+  background: transparent;
+  border: 0;
+  border-radius: 50%; // circular, matching the floating ball
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+
+  &:hover {
+    background: var(--gray-200);
+  }
 }
 
+.toc-panel-body {
+  flex: 1 1 auto;
+  overflow-y: auto;
+  padding: $padding-8 $padding-16 $padding-16;
+}
+
+// Open state: show drawer, hide ball.
+.toc-float.open {
+  .toc-panel {
+    opacity: 1;
+    visibility: visible;
+    transform: translateX(0);
+  }
+
+  .toc-fab {
+    opacity: 0;
+    visibility: hidden;
+    transform: scale(0.6);
+    pointer-events: none;
+  }
+}
+
+// When the drawer is open on a wide screen, reserve space so the page content
+// is pushed aside instead of being covered by the panel. `.book-page` already
+// transitions `margin`, so this slides in smoothly alongside the drawer.
+// On narrow screens the panel is a full-width overlay, so no room is reserved.
+@media screen and (min-width: $mobile-breakpoint) {
+  body.toc-open .book-page {
+    margin-inline-end: calc(#{$toc-panel-width} + #{$padding-16} * 2);
+  }
+}
+
+// --- TOC list (Hugo's #TableOfContents markup) ---
+.toc-panel-body #TableOfContents {
+  font-size: $font-size-14;
+
+  ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    // Each nested level adds indentation; the guide line lives in this gutter.
+    padding-inline-start: $padding-8 + $padding-4;
+  }
+
+  // Top level (heading 2) sits flush with no guide line.
+  > ul {
+    padding-inline-start: 0;
+  }
+
+  li {
+    position: relative;
+    margin: $padding-1 0;
+  }
+
+  // Hairline guide line from heading level 3 down (nested lists only).
+  // Drawn per-item so the current heading's own line can be lit up.
+  ul ul li::before {
+    content: "";
+    position: absolute;
+    inset-inline-start: 0;
+    top: 0;
+    bottom: 0;
+    width: 1px;
+    border-radius: 2px;
+    background: var(--gray-200);
+    transition: background-color 0.15s ease, opacity 0.15s ease;
+  }
+
+  a {
+    display: block;
+    padding: $padding-4 $padding-8;
+    padding-inline-start: $padding-8 + $padding-4;
+    border-radius: $border-radius;
+    color: var(--body-font-color);
+    opacity: 0.7;
+    transition: background-color 0.15s ease, color 0.15s ease, opacity 0.15s ease;
+
+    // Highlight block appears on hover only.
+    &:hover {
+      background: var(--gray-200);
+      opacity: 1;
+    }
+  }
+
+  // Parents of the current section: tint the text only (their guide line stays
+  // the default thin grey) so the hierarchy is visible without over-highlighting.
+  li.active-trail > a {
+    color: var(--color-link);
+    opacity: 1;
+  }
+
+  // The current section: accent text + its own guide line lit. No background
+  // block (that is reserved for hover).
+  li.active > a,
+  a.active {
+    color: var(--color-link);
+    opacity: 1;
+    font-weight: 600;
+  }
+
+  ul ul li.active::before {
+    background: var(--color-link);
+    width: 1px;
+    opacity: 1;
+  }
+
+  // Render the default guide line as a true hairline on Hi-DPI screens; the
+  // active line stays a crisp 1px so the current heading still stands out.
+  @media (min-resolution: 1.5dppx) {
+    ul ul li::before {
+      width: 0.5px;
+    }
+  }
+}
+
+// On narrow screens the drawer becomes a near full-width sheet.
+@media screen and (max-width: $mobile-breakpoint) {
+  .toc-panel {
+    width: calc(100vw - #{$padding-16 * 2});
+  }
+}
+
+/* =========================================================================
+   Themed scrollbars (unified radius + theme colors)
+   ========================================================================= */
 ::-webkit-scrollbar {
-    width: 10px; /* Set the width of the scrollbar */
-    height: 10px;
+  width: 10px;
+  height: 10px;
 }
 
 ::-webkit-scrollbar-thumb {
-    background-color: var(--gray-100);
-    border-radius: 6px; /* Set the border radius of the thumb */
+  background-color: var(--gray-200);
+  border-radius: $border-radius;
 }
 
 ::-webkit-scrollbar-track {
-    //background-color: #fff; /* Set the color of the track */
-    background-color: var(--gray-100);
-    border-radius: 6px; /* Set the border radius of the track */
-    box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.1); /* Add a subtle shadow to the track */
+  background-color: var(--gray-100);
+  border-radius: $border-radius;
 }

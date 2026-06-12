@@ -127,8 +127,92 @@ ul.pagination {
     word-wrap: break-word;
   }
 
+  // Compact, evenly spaced rows (instead of the global 1em li margin)
+  li {
+    margin: $padding-1 0;
+  }
+
+  // The clickable row is the page link (`> a`) or the section toggle (`> label`).
+  // Give it padding + radius so hovering highlights the whole block, not just text.
+  li > a,
+  li > label {
+    padding: $padding-8 ($padding-8 + $padding-4);
+    border-radius: $border-radius;
+    transition: background-color 0.15s ease, color 0.15s ease;
+  }
+
+  // Page links span the full row.
+  li > a {
+    display: block;
+  }
+
+  // Section rows keep their flex layout (label + collapse arrow); the inner
+  // anchor must not draw its own box so the highlight stays a single block.
+  li > label > a {
+    display: inline;
+    padding: 0;
+    border-radius: 0;
+  }
+
+  // Whole-block hover highlight.
+  li > a:hover,
+  li > label:hover {
+    background: var(--gray-200);
+  }
+
+  // Neutralise the global `aside nav ul a:hover { opacity: .5 }` dimming.
+  a:hover {
+    opacity: 1;
+  }
+
+  // Current page: accent text only. The highlight block is reserved for hover.
   a.active {
     color: var(--color-link);
+    font-weight: 600;
+  }
+
+  // Indentation guide lines: one vertical line per nested item, positioned so it
+  // lines up with the parent folder's icon. Drawn per-item (not on the <ul>) so
+  // the active branch can be highlighted segment by segment.
+  .menu-filetree ul ul {
+    margin-inline-start: 0;
+    padding-inline-start: 0;
+  }
+
+  .menu-filetree ul ul > li {
+    padding-inline-start: 1.5rem;
+  }
+
+  .menu-filetree ul ul > li::before {
+    content: "";
+    position: absolute;
+    inset-inline-start: 1.25rem; // aligns with the parent folder icon's center
+    top: -$padding-1;
+    bottom: -$padding-1;
+    width: 1px;
+    border-radius: 2px;
+    background: var(--gray-200);
+    transition: background-color 0.15s ease, opacity 0.15s ease;
+  }
+
+  // Active page's ancestor folders: tint the label only (guide line stays grey).
+  li.active-trail > a,
+  li.active-trail > label > a {
+    color: var(--color-link);
+  }
+
+  // Current page: only its own guide line is lit up (accent), kept crisp at 1px.
+  .menu-filetree ul ul > li.active::before {
+    background: var(--color-link);
+    width: 1px;
+    opacity: 1;
+  }
+
+  // Render the default guide line as a true hairline on Hi-DPI screens.
+  @media (min-resolution: 1.5dppx) {
+    .menu-filetree ul ul > li::before {
+      width: 0.5px;
+    }
   }
 
   input.toggle+label+ul {
@@ -139,23 +223,48 @@ ul.pagination {
     display: block;
   }
 
+  // File / folder glyphs: aligned in a consistent column and gently muted.
+  a > i {
+    display: inline-block;
+    width: 1.15em;
+    text-align: center;
+    opacity: 0.8;
+  }
+
+  // Collapse indicator: a clean chevron that rotates as the section opens.
   input.toggle+label::after {
-    content: "▸";
+    content: "";
+    align-self: center;
+    flex-shrink: 0;
+    width: 0.42em;
+    height: 0.42em;
+    margin-inline-start: 0.5em;
+    border-right: 2px solid currentColor;
+    border-bottom: 2px solid currentColor;
+    transform: rotate(-45deg);
+    opacity: 0.5;
+    transition: transform 0.2s ease, opacity 0.15s ease;
   }
 
   input.toggle:checked+label::after {
-    content: "▾";
+    transform: rotate(45deg);
+    opacity: 0.8;
+  }
+
+  // Show an open folder while its section is expanded.
+  input.toggle:checked+label .fa-folder::before {
+    content: "\f07c";
   }
 }
 
 // for RTL support
 body[dir="rtl"] .book-menu {
   input.toggle+label::after {
-    content: "◂";
+    transform: rotate(135deg);
   }
 
   input.toggle:checked+label::after {
-    content: "▾";
+    transform: rotate(45deg);
   }
 }
 

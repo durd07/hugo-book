@@ -1,3 +1,11 @@
 /* You can override SASS variables here. */
 
+// Unified corner radius used across the whole site (cards, code blocks, inputs,
+// hint/expand/tab blocks, buttons, search, sidebar items, TOC panel, ...).
+// Imported after `_defaults.scss`, so this plain assignment overrides the default.
+$border-radius: 0.5rem;
+
+// Slightly larger radius for big surfaces (floating panels, the TOC drawer).
+$border-radius-lg: 0.75rem;
+
 // @import "plugins/dark";

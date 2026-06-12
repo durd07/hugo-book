@@ -64,62 +64,164 @@
 {{ end }}
 
 <script>
-  function clearActiveStatesInTableOfContents() {
-    document.querySelectorAll(`div[class="book-toc-content"] nav li`).forEach((item) => {
-      item.classList.remove('active')
-    });
-  }
+  // Table of contents: drawer toggle + scroll-spy that follows the current section.
+  (function () {
+    function initToc() {
+      var floatWrap = document.getElementById('toc-float');
+      var fab = document.getElementById('toc-fab');
+      var panel = document.getElementById('toc-panel');
+      var closeBtn = document.getElementById('toc-close');
+      if (!floatWrap || !fab || !panel) return;
 
-  window.addEventListener('DOMContentLoaded', () => {
+      // Scope to the visible panel TOC (a hidden duplicate lives in the mobile header).
+      var toc = panel.querySelector('#TableOfContents');
+      var body = panel.querySelector('.toc-panel-body');
+      var links = toc ? Array.prototype.slice.call(toc.querySelectorAll('a[href^="#"]')) : [];
 
-    const observer = new IntersectionObserver(entries => {
-      entries.forEach(entry => {
-        const id = entry.target.getAttribute('id');
-        if (document.querySelector(`div[class="book-toc-content"] nav li a[href="#${id}"]`) != null) {
-          if (entry.intersectionRatio > 0) {
-            clearActiveStatesInTableOfContents();
-            document.querySelector(`div[class="book-toc-content"] nav li a[href="#${id}"]`).parentElement.classList.add('active');
+      // No headings on this page -> nothing to show.
+      if (!links.length) {
+        floatWrap.style.display = 'none';
+        return;
+      }
+
+      // --- open / close the drawer (state persists across page loads) ---
+      var TOC_KEY = 'toc.open';
+      function open() {
+        floatWrap.classList.add('open');
+        document.body.classList.add('toc-open');
+        fab.setAttribute('aria-expanded', 'true');
+        try { localStorage.setItem(TOC_KEY, '1'); } catch (e) {}
+        if (current) scrollPanelTo(current);
+      }
+      function close() {
+        floatWrap.classList.remove('open');
+        document.body.classList.remove('toc-open');
+        fab.setAttribute('aria-expanded', 'false');
+        try { localStorage.setItem(TOC_KEY, '0'); } catch (e) {}
+      }
+      function toggle() {
+        if (floatWrap.classList.contains('open')) { close(); } else { open(); }
+      }
+
+      fab.addEventListener('click', function (e) { e.stopPropagation(); toggle(); });
+      if (closeBtn) closeBtn.addEventListener('click', function (e) { e.stopPropagation(); close(); });
+      document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape' || e.keyCode === 27) close();
+      });
+      document.addEventListener('click', function (e) {
+        if (!floatWrap.classList.contains('open')) return;
+        if (panel.contains(e.target) || fab.contains(e.target)) return;
+        // Following a link navigates away; keep the drawer's open state so it
+        // re-opens on the next page (don't treat it as a dismiss).
+        if (e.target.closest && e.target.closest('a')) return;
+        // The docked panel reflows content on wide screens, so only dismiss via
+        // outside-click on narrow screens where it overlays the page.
+        if (window.matchMedia('(min-width: 60rem)').matches) return;
+        close();
+      });
+
+      // --- scroll-spy ---
+      var targets = links.map(function (a) {
+        var id = decodeURIComponent((a.getAttribute('href') || '').slice(1));
+        return { link: a, el: id ? document.getElementById(id) : null };
+      }).filter(function (t) { return t.el; });
+
+      var current = null;
+
+      function scrollPanelTo(link) {
+        if (!body || !floatWrap.classList.contains('open')) return;
+        var rel = link.getBoundingClientRect().top - body.getBoundingClientRect().top + body.scrollTop;
+        body.scrollTo({ top: rel - body.clientHeight / 2, behavior: 'smooth' });
+      }
+
+      function setActive(link) {
+        if (link === current) return;
+        current = link;
+        // Reset every item, then light up the active heading + all its parents.
+        toc.querySelectorAll('li').forEach(function (li) {
+          li.classList.remove('active', 'active-trail');
+        });
+        links.forEach(function (a) { a.classList.remove('active'); });
+        if (link) {
+          link.classList.add('active');
+          var li = link.closest('li');
+          if (li) {
+            li.classList.add('active');
+            var parent = li.parentElement ? li.parentElement.closest('li') : null;
+            while (parent && toc.contains(parent)) {
+              parent.classList.add('active-trail');
+              parent = parent.parentElement ? parent.parentElement.closest('li') : null;
+            }
+          }
+          scrollPanelTo(link);
+        }
+      }
+
+      function onScroll() {
+        var offset = 100; // a heading counts as "current" once its top passes this line
+        var found = null;
+        for (var i = 0; i < targets.length; i++) {
+          if (targets[i].el.getBoundingClientRect().top <= offset) {
+            found = targets[i].link;
           } else {
-            document.querySelector(`div[class="book-toc-content"] nav li a[href="#${id}"]`).parentElement.classList.remove('active');
+            break;
           }
         }
+        if (!found) found = targets[0].link;
+        setActive(found);
+      }
+
+      links.forEach(function (a) {
+        a.addEventListener('click', function () { setActive(a); });
       });
-    });
 
-    // Track all sections that have an `id` applied
-    document.querySelectorAll("h1,h2,h3,h4").forEach((section) => {
-      observer.observe(section);
-    });
+      var ticking = false;
+      window.addEventListener('scroll', function () {
+        if (!ticking) {
+          ticking = true;
+          window.requestAnimationFrame(function () { onScroll(); ticking = false; });
+        }
+      }, { passive: true });
+      window.addEventListener('resize', onScroll, { passive: true });
+      onScroll();
 
-    //Array.prototype.forEach.call(document.querySelectorAll("h2, h3, h4, h5, h6"), function (entry) {
-    //  const id = entry.getAttribute('id');
-    //  if (id != null) {
-    //    if (entry.intersectionRatio > 0) {
-    //      console.log(id, "active")
-    //      document.querySelector(`nav li a[href="#${id}"]`).parentElement.classList.add('active');
-    //    } else {
-    //      console.log(id, "deactive")
-    //      document.querySelector(`nav li a[href="#${id}"]`).parentElement.classList.remove('active');
-    //    }
-    //  }
-    //});
+      // Keep the drawer open across page navigation if it was open before.
+      try {
+        if (localStorage.getItem(TOC_KEY) === '1') open();
+      } catch (e) {}
+    }
 
-    //const callback = (mutationList, observer) => {
-    //  for (const mutation of mutationList) {
-    //    if (mutation.type === 'childList') {
-    //      console.log('A child node has been added or removed.');
-    //    } else if (mutation.type === 'attributes') {
-    //      console.log(`The ${mutation.attributeName} attribute was modified.`);
-    //    }
-    //  }
-    //};
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', initToc);
+    } else {
+      initToc();
+    }
+  })();
+</script>
 
-    //const observer = new MutationObserver(callback);
-    //// Track all sections that have an `id` applied
-    //document.querySelectorAll("h2, h3, h4, h5, h6").forEach((section) => {
-    //  observer.observe(callback);
-    //});
-  });
+<script>
+  // Sidebar: tag the current page and its ancestor folders so the indentation
+  // guide lines along the active branch light up (CSS .active / .active-trail).
+  (function () {
+    function initMenuTrail() {
+      var menu = document.querySelector('.book-menu');
+      if (!menu) return;
+      var active = menu.querySelector('a.active');
+      if (!active) return;
+      var li = active.closest('li');
+      if (li) li.classList.add('active');
+      var parent = li && li.parentElement ? li.parentElement.closest('li') : null;
+      while (parent && menu.contains(parent)) {
+        parent.classList.add('active-trail');
+        parent = parent.parentElement ? parent.parentElement.closest('li') : null;
+      }
+    }
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', initMenuTrail);
+    } else {
+      initMenuTrail();
+    }
+  })();
 </script>
 
 <!--

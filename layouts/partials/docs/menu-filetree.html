@@ -47,7 +47,7 @@
     </a>
   {{ else if .Page.Content }}
     <a href="{{ .Page.RelPermalink }}" class="{{ if $current }}active{{ end }}">
-      <i class="fa-regular fa-file"></i>&nbsp;{{- partial "docs/title" .Page -}}
+      <i class="fa-regular fa-file-lines"></i>&nbsp;{{- partial "docs/title" .Page -}}
     </a>
   {{ else }}
     <span><i class="{{ $icon }}"></i>&nbsp;{{- partial "docs/title" .Page -}}</span>
