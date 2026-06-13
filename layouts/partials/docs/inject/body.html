@@ -360,6 +360,38 @@
   })();
 </script>
 
+<!-- "Edit this page" -> online Markdown editor (auth-protected backend). -->
+<script>
+  (function () {
+    function editorApiBase() {
+      if (window.WIKI_EDITOR_API_BASE) {
+        return window.WIKI_EDITOR_API_BASE.replace(/\/+$/, "");
+      }
+      var local = ["localhost", "127.0.0.1", "0.0.0.0"].indexOf(location.hostname) !== -1;
+      if (local && location.port === "8080") {
+        return "/api/kanban/editor";
+      }
+      if (local) {
+        return "http://localhost:8000/editor";
+      }
+      return "/api/kanban/editor";
+    }
+
+    document.addEventListener("DOMContentLoaded", function () {
+      var base = editorApiBase();
+      Array.prototype.forEach.call(
+        document.querySelectorAll("a.book-edit-online"),
+        function (link) {
+          var path = link.getAttribute("data-edit-path") || "";
+          var ret = link.getAttribute("data-return-url") || "/";
+          link.href = base + "?path=" + encodeURIComponent(path) +
+            "&return_url=" + encodeURIComponent(ret);
+        }
+      );
+    });
+  })();
+</script>
+
 <!-- Light/dark theme toggle -->
 <script>
   (function () {
