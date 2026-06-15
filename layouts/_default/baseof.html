@@ -15,6 +15,20 @@
 </head>
 
 <body class="book-panel-{{ $bookPanelStyle }}" dir="{{ default " ltr" .Site.Language.LanguageDirection }}">
+  <script>
+    // Apply the saved panel style before paint so the choice survives reloads
+    // without a flash of the config default.
+    (function () {
+      try {
+        var s = localStorage.getItem("panel-style");
+        if (s === "compact" || s === "liquid-glass") {
+          var c = document.body.classList;
+          c.remove("book-panel-compact", "book-panel-liquid-glass");
+          c.add("book-panel-" + s);
+        }
+      } catch (e) {}
+    })();
+  </script>
   <input type="checkbox" class="hidden toggle" id="menu-control" />
   <input type="checkbox" class="hidden toggle" id="toc-control" />
   <main class="container flex">

@@ -36,6 +36,104 @@
   })
 </script>
 
+<!-- Code block line-number toggle -->
+<script>
+  (function () {
+    var btn = document.getElementById("code-line-toggle");
+    if (!btn) return;
+
+    var root = document.documentElement;
+    var KEY = "code-line-numbers";
+
+    function shown() {
+      return root.classList.contains("code-line-numbers-shown");
+    }
+
+    function updateLabel() {
+      var label = shown() ? "Hide code line numbers" : "Show code line numbers";
+      btn.setAttribute("aria-label", label);
+      btn.setAttribute("title", label);
+      btn.setAttribute("aria-pressed", shown() ? "true" : "false");
+    }
+
+    function apply(nextShown) {
+      root.classList.toggle("code-line-numbers-shown", nextShown);
+      try {
+        if (nextShown) {
+          localStorage.setItem(KEY, "shown");
+        } else {
+          localStorage.removeItem(KEY);
+        }
+      } catch (e) {}
+      updateLabel();
+    }
+
+    updateLabel();
+    btn.addEventListener("click", function () {
+      apply(!shown());
+    });
+  })();
+</script>
+
+<!-- Self-hosted visitor counter (page views / unique visitors / your IP). -->
+<script>
+  (function () {
+    var el = document.getElementById("footer-stats");
+    if (!el) return;
+
+    function apiBase() {
+      if (window.WIKI_CHECKBOX_API_BASE) {
+        return window.WIKI_CHECKBOX_API_BASE.replace(/\/+$/, "");
+      }
+      var local = ["localhost", "127.0.0.1", "0.0.0.0"].indexOf(location.hostname) !== -1;
+      if (local && location.port === "8080") return "/api";
+      if (local) return "http://localhost:8000";
+      return "/api";
+    }
+
+    function num(n) {
+      try {
+        return Number(n || 0).toLocaleString();
+      } catch (e) {
+        return String(n || 0);
+      }
+    }
+
+    // Build each stat with textContent so a forged X-Forwarded-For IP can never
+    // inject markup back into the page.
+    function stat(label, value) {
+      var span = document.createElement("span");
+      span.className = "footer-stat";
+      span.appendChild(document.createTextNode(label + " "));
+      var b = document.createElement("strong");
+      b.textContent = value;
+      span.appendChild(b);
+      return span;
+    }
+
+    function render(d) {
+      el.textContent = "";
+      el.appendChild(stat("Views", num(d.pv)));
+      el.appendChild(stat("Visitors", num(d.uv)));
+      el.appendChild(stat("Your IP", d.ip || "-"));
+      el.hidden = false;
+    }
+
+    fetch(apiBase() + "/visit", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ path: location.pathname }),
+    })
+      .then(function (r) {
+        return r.ok ? r.json() : null;
+      })
+      .then(function (d) {
+        if (d) render(d);
+      })
+      .catch(function () {});
+  })();
+</script>
+
 <!-- Katex -->
 {{ if or .Params.katex .Site.Params.katex }}
 <!-- Include katext only first time -->
@@ -473,6 +571,42 @@
             "&return_url=" + encodeURIComponent(ret);
         }
       );
+    });
+  })();
+</script>
+
+<!-- Panel style toggle (compact <-> liquid glass) -->
+<script>
+  (function () {
+    var btn = document.getElementById("panel-style-toggle");
+    if (!btn) return;
+
+    var body = document.body;
+    var KEY = "panel-style";
+    var COMPACT = "book-panel-compact";
+    var GLASS = "book-panel-liquid-glass";
+
+    function isGlass() {
+      return body.classList.contains(GLASS);
+    }
+
+    function updateLabel() {
+      var label = isGlass() ? "Switch to compact panels" : "Switch to liquid glass panels";
+      btn.setAttribute("aria-label", label);
+      btn.setAttribute("title", label);
+      btn.setAttribute("aria-pressed", isGlass() ? "true" : "false");
+    }
+
+    function apply(glass) {
+      body.classList.toggle(GLASS, glass);
+      body.classList.toggle(COMPACT, !glass);
+      try { localStorage.setItem(KEY, glass ? "liquid-glass" : "compact"); } catch (e) {}
+      updateLabel();
+    }
+
+    updateLabel();
+    btn.addEventListener("click", function () {
+      apply(!isGlass());
     });
   })();
 </script>

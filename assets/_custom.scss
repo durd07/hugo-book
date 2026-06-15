@@ -67,14 +67,45 @@
   }
 }
 
-// Light/dark theme switch — sits inline in the social-icon row, same size as them.
-.theme-toggle {
+// Self-hosted visit counter, centred between the social icons and the logo.
+// Hidden until JS fills it so a stalled/offline backend leaves no empty gap.
+.footer-stats {
+  flex: 1 1 auto;
+  min-width: 0;
+  padding-top: $padding-16;
+  text-align: center;
+  font-size: $font-size-14;
+  color: var(--body-font-color);
+  opacity: 0.7;
+
+  .footer-stat {
+    display: inline-block;
+  }
+
+  .footer-stat + .footer-stat::before {
+    content: "·";
+    margin: 0 0.5em;
+    opacity: 0.6;
+  }
+
+  strong {
+    font-weight: 600;
+    opacity: 1;
+  }
+}
+
+// Display toggles (theme / panel style / code line numbers) sit inline in the
+// footer social-icon row, spaced like the social icons (same $padding-8 gap).
+.theme-toggle,
+.panel-style-toggle,
+.code-line-toggle {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   vertical-align: middle;
   padding: 0;
   margin: 0;
+  margin-inline-end: $padding-8;
 
   color: var(--body-font-color);
   background: none;
@@ -84,7 +115,6 @@
   opacity: 0.85;
   transition: color 0.15s ease, opacity 0.15s ease;
 
-  // Simple line icons (crescent / plain sun) sized to sit with the social icons.
   svg {
     width: 1.5em;
     height: 1.5em;
@@ -93,6 +123,14 @@
     stroke-width: 2;
     stroke-linecap: round;
     stroke-linejoin: round;
+  }
+
+  text {
+    fill: currentColor;
+    stroke: none;
+    font-family: "Roboto Mono", monospace;
+    font-size: 0.55rem;
+    font-weight: 600;
   }
 
   &:hover {
@@ -106,12 +144,59 @@
   }
 }
 
+.code-line-toggle {
+  width: 1.6em;
+  height: 1.6em;
+
+  svg {
+    width: 1.6em;
+    height: 1.6em;
+    transform: none;
+  }
+
+  text {
+    font-size: 0.58rem;
+  }
+
+  // Default state shows the "off" (struck-through) glyph since line numbers
+  // are hidden by default.
+  .code-lines-on {
+    display: none;
+  }
+}
+
 :root[data-theme="light"] .theme-toggle {
   .theme-icon-dark {
     display: none;
   }
   .theme-icon-light {
     display: inline-block;
+  }
+}
+
+// Panel-style toggle shows the icon for the currently active panel style.
+.panel-style-toggle .panel-icon-glass {
+  display: none;
+}
+
+body.book-panel-liquid-glass .panel-style-toggle {
+  .panel-icon-compact {
+    display: none;
+  }
+  .panel-icon-glass {
+    display: inline-block;
+  }
+}
+
+:root.code-line-numbers-shown {
+  .code-line-toggle {
+    .code-lines-on {
+      display: inline-block;
+    }
+
+    .code-lines-off {
+      display: none;
+    }
   }
 }
 

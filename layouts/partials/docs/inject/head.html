@@ -1,10 +1,13 @@
-<!-- Apply the saved colour theme before first paint to avoid a flash of the wrong theme. -->
+<!-- Apply saved display preferences before first paint to avoid a flash of the wrong state. -->
 <script>
   (function () {
     try {
       var t = localStorage.getItem("color-theme");
       if (t === "light" || t === "dark") {
         document.documentElement.setAttribute("data-theme", t);
+      }
+      if (localStorage.getItem("code-line-numbers") === "shown") {
+        document.documentElement.classList.add("code-line-numbers-shown");
       }
     } catch (e) {}
   })();

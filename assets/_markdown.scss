@@ -285,6 +285,25 @@
   }
 }
 
+// Code line numbers are hidden by default; the page toggle opts in by adding
+// `code-line-numbers-shown` to the root element.
+.markdown {
+  .chroma .ln,
+  .chroma .lnt {
+    display: none;
+  }
+}
+
+:root.code-line-numbers-shown .markdown {
+  .chroma .ln {
+    display: inline;
+  }
+
+  .chroma .lnt {
+    display: inline-block;
+  }
+}
+
 
 .markdown-inner {
   // Util class to remove extra margin in nested markdown content
