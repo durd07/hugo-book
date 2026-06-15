@@ -1,3 +1,10 @@
+{{- $bookPanelStyle := lower (default "compact" .Site.Params.BookPanelStyle) -}}
+{{- if eq $bookPanelStyle "glass" -}}
+  {{- $bookPanelStyle = "liquid-glass" -}}
+{{- end -}}
+{{- if not (in (slice "compact" "liquid-glass") $bookPanelStyle) -}}
+  {{- $bookPanelStyle = "compact" -}}
+{{- end -}}
 <!DOCTYPE html>
 <html lang="{{ default .Site.Language.Lang .Site.LanguageCode  }}" dir="{{ default " ltr"
   .Site.Language.LanguageDirection }}">
@@ -7,7 +14,7 @@
   {{ partial "docs/inject/head" . }}
 </head>
 
-<body dir="{{ default " ltr" .Site.Language.LanguageDirection }}">
+<body class="book-panel-{{ $bookPanelStyle }}" dir="{{ default " ltr" .Site.Language.LanguageDirection }}">
   <input type="checkbox" class="hidden toggle" id="menu-control" />
   <input type="checkbox" class="hidden toggle" id="toc-control" />
   <main class="container flex">

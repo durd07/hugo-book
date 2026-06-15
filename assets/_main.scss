@@ -103,9 +103,8 @@ ul.pagination {
 // --sidebar-width custom property (drag handle below, persisted to localStorage).
 $sidebar-width-default: 22rem;
 
-// Resizing the sidebar: an invisible drag strip sits in the gutter at the
-// card's right edge (wide screens only). Hovering the edge shows a col-resize
-// cursor and you drag it directly — no visible handle or icon.
+// Resizing the sidebar: an invisible drag strip sits at the panel's right edge
+// on wide screens. Hovering the edge shows a col-resize cursor.
 .menu-resizer {
   display: none;
 }
@@ -116,10 +115,14 @@ $sidebar-width-default: 22rem;
     position: fixed;
     top: $padding-16;
     bottom: $padding-16;
-    inset-inline-start: calc(var(--sidebar-width, #{$sidebar-width-default}) - #{$padding-16});
+    inset-inline-start: calc(var(--sidebar-width, #{$menu-width}) - #{$padding-16});
     width: $padding-16;
     z-index: 42;
     cursor: col-resize;
+  }
+
+  body.book-panel-liquid-glass .menu-resizer {
+    inset-inline-start: calc(var(--sidebar-width, #{$sidebar-width-default}) - #{$padding-16});
   }
 
   body.sidebar-resizing {
@@ -143,24 +146,31 @@ $sidebar-width-default: 22rem;
     @include fixed;
   }
 
-  // Wide screens: frame the sidebar as a floating bordered card, mirroring the
-  // TOC drawer (same border + large radius + shadow, inset from the edges so the
-  // rounded corners are visible). Mobile keeps the flush slide-in drawer.
+  // Glass mode frames the wide-screen sidebar as a floating bordered card.
+  // Compact mode keeps the same flush drawer treatment used by the mobile menu.
   @media screen and (min-width: $mobile-breakpoint) {
-    // Reserve the column from --sidebar-width so it can be dragged wider /
-    // narrower; defaults to the TOC panel's footprint.
-    flex-basis: var(--sidebar-width, #{$sidebar-width-default});
+    flex-basis: var(--sidebar-width, #{$menu-width});
 
     .book-menu-content {
-      top: $padding-16;
-      bottom: $padding-16;
-      inset-inline-start: $padding-16;
-      width: calc(var(--sidebar-width, #{$sidebar-width-default}) - #{$padding-16 * 2});
+      width: var(--sidebar-width, #{$menu-width});
+    }
 
-      background: var(--card-background);
-      border: $padding-1 solid var(--gray-200);
-      border-radius: $border-radius-lg;
-      box-shadow: var(--card-shadow);
+    body.book-panel-liquid-glass & {
+      // Reserve the column from --sidebar-width so it can be dragged wider /
+      // narrower; defaults to the TOC panel's footprint.
+      flex-basis: var(--sidebar-width, #{$sidebar-width-default});
+
+      .book-menu-content {
+        top: $padding-16;
+        bottom: $padding-16;
+        inset-inline-start: $padding-16;
+        width: calc(var(--sidebar-width, #{$sidebar-width-default}) - #{$padding-16 * 2});
+
+        background: var(--card-background);
+        border: $padding-1 solid var(--gray-200);
+        border-radius: $border-radius-lg;
+        box-shadow: var(--card-shadow);
+      }
     }
   }
 
@@ -434,6 +444,61 @@ body[dir="rtl"] .book-menu {
   }
 }
 
+body.book-panel-compact .book-menu .book-search {
+  &::before {
+    opacity: 0.65;
+  }
+
+  input {
+    background: var(--body-background);
+    border: $padding-1 solid var(--gray-200);
+    box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+
+    &:focus {
+      border-color: var(--color-link);
+      box-shadow: 0 0 0 $padding-1 var(--color-link);
+    }
+  }
+
+  #book-search-results {
+    list-style: none;
+    margin: $padding-8 0 0;
+    padding: $padding-4;
+    background: var(--body-background);
+    border: $padding-1 solid var(--gray-200);
+    border-radius: $border-radius;
+    box-shadow: 0 2px 8px rgba(15, 23, 42, 0.06);
+
+    &:empty {
+      display: none;
+    }
+
+    li {
+      margin: $padding-1 0;
+    }
+
+    a {
+      display: block;
+      padding: $padding-4 $padding-8;
+      border-radius: $border-radius;
+      color: var(--menu-font-color);
+
+      &:hover {
+        background: var(--gray-100);
+        color: var(--body-font-color);
+      }
+    }
+
+    small {
+      display: block;
+      padding: 0 $padding-8 $padding-4;
+      color: var(--body-font-color);
+      opacity: 0.55;
+    }
+  }
+}
+
 .book-toc {
   flex: 0 0 $toc-width;
   font-size: $font-size-14;
@@ -566,8 +631,11 @@ body[dir="rtl"] .book-menu {
 // Extra space for big screens
 @media screen and (min-width: $container-max-width) {
 
-  .book-page,
-  .book-menu .book-menu-content,
+  .book-page {
+    padding: $padding-16 * 2 $padding-16;
+  }
+
+  body.book-panel-liquid-glass .book-menu .book-menu-content,
   .book-toc .book-toc-content {
     padding: $padding-16 * 2 $padding-16;
   }

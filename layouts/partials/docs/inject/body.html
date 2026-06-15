@@ -77,12 +77,92 @@
       var toc = panel.querySelector('#TableOfContents');
       var body = panel.querySelector('.toc-panel-body');
       var links = toc ? Array.prototype.slice.call(toc.querySelectorAll('a[href^="#"]')) : [];
+      var root = document.documentElement;
+      var mq = window.matchMedia('(min-width: 60rem)');
 
       // No headings on this page -> nothing to show.
       if (!links.length) {
         floatWrap.style.display = 'none';
         return;
       }
+
+      // --- resize the drawer width (wide screens), persisted across page loads ---
+      var TOC_WIDTH_KEY = 'toc.width';
+      var resizeHandle = null;
+
+      function pointerX(e) {
+        return e.clientX != null ? e.clientX
+          : (e.touches && e.touches[0] ? e.touches[0].clientX : 0);
+      }
+      function widthBounds() {
+        return { min: 240, max: Math.min(640, Math.round(window.innerWidth * 0.5)) };
+      }
+      function clampWidth(v) {
+        var b = widthBounds();
+        return Math.max(b.min, Math.min(b.max, v));
+      }
+      function applyWidth(px) {
+        root.style.setProperty('--toc-width', clampWidth(px) + 'px');
+      }
+      function currentWidth() {
+        return panel.getBoundingClientRect().width || 320;
+      }
+
+      try {
+        var savedWidth = parseInt(localStorage.getItem(TOC_WIDTH_KEY), 10);
+        if (savedWidth) applyWidth(savedWidth);
+      } catch (e) {}
+
+      function initResize() {
+        var existing = document.querySelector('.toc-resizer');
+        if (existing) return existing;
+
+        var handle = document.createElement('div');
+        handle.className = 'toc-resizer';
+        handle.setAttribute('role', 'separator');
+        handle.setAttribute('aria-orientation', 'vertical');
+        handle.title = 'Drag to resize \u00b7 double-click to reset';
+        document.body.appendChild(handle);
+
+        var dragging = false;
+        var dragOffset = 0;
+
+        function onMove(e) {
+          if (!dragging) return;
+          applyWidth(window.innerWidth - pointerX(e) + dragOffset);
+          if (e.cancelable) e.preventDefault();
+        }
+        function onUp() {
+          if (!dragging) return;
+          dragging = false;
+          handle.classList.remove('dragging');
+          document.body.classList.remove('toc-resizing');
+          window.removeEventListener('pointermove', onMove);
+          window.removeEventListener('pointerup', onUp);
+          var cur = parseInt(getComputedStyle(root).getPropertyValue('--toc-width'), 10);
+          try { if (cur) localStorage.setItem(TOC_WIDTH_KEY, cur); } catch (e) {}
+        }
+
+        handle.addEventListener('pointerdown', function (e) {
+          if (!mq.matches) return;
+          dragging = true;
+          dragOffset = currentWidth() - (window.innerWidth - pointerX(e));
+          handle.classList.add('dragging');
+          document.body.classList.add('toc-resizing');
+          window.addEventListener('pointermove', onMove);
+          window.addEventListener('pointerup', onUp);
+          if (e.cancelable) e.preventDefault();
+        });
+
+        handle.addEventListener('dblclick', function () {
+          root.style.removeProperty('--toc-width');
+          try { localStorage.removeItem(TOC_WIDTH_KEY); } catch (e) {}
+        });
+
+        return handle;
+      }
+
+      resizeHandle = initResize();
 
       // --- open / close the drawer (state persists across page loads) ---
       var TOC_KEY = 'toc.open';
@@ -111,6 +191,7 @@
       document.addEventListener('click', function (e) {
         if (!floatWrap.classList.contains('open')) return;
         if (panel.contains(e.target) || fab.contains(e.target)) return;
+        if (resizeHandle && resizeHandle.contains(e.target)) return;
         // Following a link navigates away; keep the drawer's open state so it
         // re-opens on the next page (don't treat it as a dismiss).
         if (e.target.closest && e.target.closest('a')) return;
@@ -226,10 +307,9 @@
 
 <script>
   // Sidebar: drag-to-resize its width (wide screens), persisted across page loads.
-  // Defaults to the TOC panel's footprint; double-click the handle to reset.
+  // Double-click the handle to reset.
   (function () {
     var KEY = 'sidebar.width';
-    var GUTTER = 16; // px gap between the screen edge and the sidebar card
     var root = document.documentElement;
     var mq = window.matchMedia('(min-width: 60rem)');
 
@@ -238,6 +318,10 @@
     }
     function clamp(v) { var b = bounds(); return Math.max(b.min, Math.min(b.max, v)); }
     function apply(px) { root.style.setProperty('--sidebar-width', clamp(px) + 'px'); }
+    function pointerX(e) {
+      return e.clientX != null ? e.clientX
+        : (e.touches && e.touches[0] ? e.touches[0].clientX : 0);
+    }
 
     // Restore a previously chosen width.
     try {
@@ -247,7 +331,8 @@
 
     function init() {
       if (document.querySelector('.menu-resizer')) return;
-      if (!document.querySelector('.book-menu')) return;
+      var menu = document.querySelector('.book-menu');
+      if (!menu) return;
 
       var handle = document.createElement('div');
       handle.className = 'menu-resizer';
@@ -257,12 +342,11 @@
       document.body.appendChild(handle);
 
       var dragging = false;
+      var dragOffset = 0;
 
       function onMove(e) {
         if (!dragging) return;
-        var x = e.clientX != null ? e.clientX
-          : (e.touches && e.touches[0] ? e.touches[0].clientX : 0);
-        apply(x + GUTTER); // the card's right edge tracks the cursor
+        apply(pointerX(e) + dragOffset);
         if (e.cancelable) e.preventDefault();
       }
       function onUp() {
@@ -279,6 +363,7 @@
       handle.addEventListener('pointerdown', function (e) {
         if (!mq.matches) return;
         dragging = true;
+        dragOffset = menu.getBoundingClientRect().width - pointerX(e);
         handle.classList.add('dragging');
         document.body.classList.add('sidebar-resizing');
         window.addEventListener('pointermove', onMove);
