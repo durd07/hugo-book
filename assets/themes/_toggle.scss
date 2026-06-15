@@ -20,6 +20,40 @@
 // for tokens that only one of the two chroma styles happens to define.
 :root:not([data-theme="light"]) {
   @import "chroma-dark";
+
+  .markdown {
+    code {
+      background: var(--wiki-editor-surface-2);
+      border: $padding-1 solid var(--wiki-editor-border);
+    }
+
+    pre {
+      background: var(--wiki-editor-inset);
+      border: $padding-1 solid var(--wiki-editor-border);
+    }
+
+    pre code {
+      border: 0;
+    }
+
+    .chroma,
+    .bg {
+      background-color: var(--wiki-editor-inset);
+    }
+
+    .chroma .hl {
+      background-color: var(--wiki-editor-surface-2);
+    }
+
+    .copy-code-button {
+      background: var(--wiki-editor-panel);
+      border-color: var(--wiki-editor-border);
+
+      &:hover {
+        background: var(--wiki-editor-surface-2);
+      }
+    }
+  }
 }
 
 :root[data-theme="light"] {
