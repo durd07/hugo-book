@@ -56,6 +56,22 @@ $hint-colors: (
 
   --panel-hover: #e2eaf4; // soft cool-blue hover for home-page panels
   --card-shadow: 0 4px 16px rgba(15, 23, 42, 0.05); // light, soft elevation
+
+  // WikiEditor palette aliases. Sidebar / TOC chrome uses these so compact and
+  // liquid-glass modes stay visually aligned with the editor UI.
+  --wiki-editor-bg: #fbfcfd;
+  --wiki-editor-panel: #f3f5f7;
+  --wiki-editor-inset: #f7f7f7;
+  --wiki-editor-fg: #3b454e;
+  --wiki-editor-muted: #6b7682;
+  --wiki-editor-border: #d9dee5;
+  --wiki-editor-border-strong: #c2cad4;
+  --wiki-editor-surface-2: #eef1f5;
+  --wiki-editor-shadow: 0 10px 30px rgba(15, 23, 42, 0.12);
+  --wiki-editor-scrollbar-track: transparent;
+  --wiki-editor-scrollbar-thumb: #aeb8c4;
+  --wiki-editor-scrollbar-thumb-hover: #8f9aa8;
+  --wiki-editor-tree-guide: #d9dee5;
 }
 
 @mixin theme-dark {
@@ -82,4 +98,20 @@ $hint-colors: (
 
   --panel-hover: #336699; // existing accent for home-page panel hover
   --card-shadow: 0 8px 30px rgba(0, 0, 0, 0.35); // unchanged dark elevation
+
+  // WikiEditor palette aliases. Sidebar / TOC chrome uses these so compact and
+  // liquid-glass modes stay visually aligned with the editor UI.
+  --wiki-editor-bg: #343a40;
+  --wiki-editor-panel: #2b3036;
+  --wiki-editor-inset: #21262b;
+  --wiki-editor-fg: #e9ecef;
+  --wiki-editor-muted: #9aa4ad;
+  --wiki-editor-border: rgba(255, 255, 255, 0.16);
+  --wiki-editor-border-strong: rgba(255, 255, 255, 0.28);
+  --wiki-editor-surface-2: rgba(255, 255, 255, 0.06);
+  --wiki-editor-shadow: 0 8px 30px rgba(0, 0, 0, 0.35);
+  --wiki-editor-scrollbar-track: transparent;
+  --wiki-editor-scrollbar-thumb: rgba(255, 255, 255, 0.18);
+  --wiki-editor-scrollbar-thumb-hover: rgba(255, 255, 255, 0.32);
+  --wiki-editor-tree-guide: rgba(255, 255, 255, 0.14);
 }

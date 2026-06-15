@@ -134,6 +134,7 @@ $sidebar-width-default: 22rem;
 .book-menu {
   flex: 0 0 $menu-width;
   font-size: $font-size-14;
+  color: var(--wiki-editor-fg);
 
   .book-menu-content {
     overflow: hidden !important;
@@ -141,7 +142,7 @@ $sidebar-width-default: 22rem;
     width: $menu-width;
     padding: $padding-16;
     //background: var(--body-background);
-    background: var(--gray-100);
+    background: var(--wiki-editor-panel);
 
     @include fixed;
   }
@@ -166,10 +167,10 @@ $sidebar-width-default: 22rem;
         inset-inline-start: $padding-16;
         width: calc(var(--sidebar-width, #{$sidebar-width-default}) - #{$padding-16 * 2});
 
-        background: var(--card-background);
-        border: $padding-1 solid var(--gray-200);
+        background: var(--wiki-editor-panel);
+        border: $padding-1 solid var(--wiki-editor-border);
         border-radius: $border-radius-lg;
-        box-shadow: var(--card-shadow);
+        box-shadow: var(--wiki-editor-shadow);
       }
     }
   }
@@ -204,9 +205,7 @@ $sidebar-width-default: 22rem;
   li > label {
     padding: $padding-8 ($padding-8 + $padding-4);
     border-radius: $border-radius;
-    // Muted nav colour so the long list of links isn't a harsh wall of text
-    // (most noticeable in the light theme). Active rows still get the accent.
-    color: var(--menu-font-color);
+    color: var(--wiki-editor-fg);
     transition: background-color 0.15s ease, color 0.15s ease;
   }
 
@@ -226,7 +225,7 @@ $sidebar-width-default: 22rem;
   // Whole-block hover highlight.
   li > a:hover,
   li > label:hover {
-    background: var(--gray-200);
+    background: var(--wiki-editor-surface-2);
   }
 
   // Neutralise the global `aside nav ul a:hover { opacity: .5 }` dimming.
@@ -260,7 +259,7 @@ $sidebar-width-default: 22rem;
     bottom: -$padding-1;
     width: 1px;
     border-radius: 2px;
-    background: var(--gray-200);
+    background: var(--wiki-editor-tree-guide);
     transition: background-color 0.15s ease, opacity 0.15s ease;
   }
 
@@ -412,11 +411,17 @@ body[dir="rtl"] .book-menu {
     // Leave a clear gap after the magnifying-glass icon before the text starts.
     padding-inline-start: $padding-16 + $padding-16;
 
-    border: 0;
+    border: $padding-1 solid var(--wiki-editor-border);
     border-radius: $border-radius;
 
-    background: var(--gray-100);
+    background: var(--wiki-editor-bg);
     color: var(--body-font-color);
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+
+    &:focus {
+      border-color: var(--wiki-editor-border-strong);
+      box-shadow: 0 0 0 $padding-1 var(--color-link);
+    }
 
     &:required+.book-search-spinner {
       display: block;
@@ -444,31 +449,19 @@ body[dir="rtl"] .book-menu {
   }
 }
 
-body.book-panel-compact .book-menu .book-search {
+.book-menu .book-search {
   &::before {
     opacity: 0.65;
-  }
-
-  input {
-    background: var(--body-background);
-    border: $padding-1 solid var(--gray-200);
-    box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
-    transition: border-color 0.15s ease, box-shadow 0.15s ease;
-
-    &:focus {
-      border-color: var(--color-link);
-      box-shadow: 0 0 0 $padding-1 var(--color-link);
-    }
   }
 
   #book-search-results {
     list-style: none;
     margin: $padding-8 0 0;
     padding: $padding-4;
-    background: var(--body-background);
-    border: $padding-1 solid var(--gray-200);
+    background: var(--wiki-editor-bg);
+    border: $padding-1 solid var(--wiki-editor-border);
     border-radius: $border-radius;
-    box-shadow: 0 2px 8px rgba(15, 23, 42, 0.06);
+    box-shadow: var(--wiki-editor-shadow);
 
     &:empty {
       display: none;
@@ -482,10 +475,10 @@ body.book-panel-compact .book-menu .book-search {
       display: block;
       padding: $padding-4 $padding-8;
       border-radius: $border-radius;
-      color: var(--menu-font-color);
+      color: var(--wiki-editor-fg);
 
       &:hover {
-        background: var(--gray-100);
+        background: var(--wiki-editor-surface-2);
         color: var(--body-font-color);
       }
     }
@@ -493,8 +486,8 @@ body.book-panel-compact .book-menu .book-search {
     small {
       display: block;
       padding: 0 $padding-8 $padding-4;
-      color: var(--body-font-color);
-      opacity: 0.55;
+      color: var(--wiki-editor-muted);
+      opacity: 1;
     }
   }
 }
