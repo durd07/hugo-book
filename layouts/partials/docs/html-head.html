@@ -54,4 +54,71 @@ https://github.com/alex-shpak/hugo-book
   {{- end -}}
 {{- end -}}
 
-<script src="https://cdn.jsdelivr.net/npm/markmap-autoloader@0.15.2"></script>
+<!--
+  Markmap, fully self-hosted (no CDN). The upstream markmap-autoloader always
+  pings jsdelivr/unpkg to pick a "fastest provider" before loading its deps, so
+  it can't run offline. Instead we lazily inject the vendored d3 + markmap-lib +
+  markmap-view (themes/book/static/markmap/) only on pages that actually contain
+  a `.markmap` block, then transform + render it locally.
+-->
+<script>
+  (function () {
+    var SCRIPTS = [
+      "{{ "markmap/d3.min.js" | relURL }}",
+      "{{ "markmap/markmap-lib.js" | relURL }}",
+      "{{ "markmap/markmap-view.js" | relURL }}"
+    ];
+
+    function loadSequential(srcs, done) {
+      var i = 0;
+      (function next() {
+        if (i >= srcs.length) { done(); return; }
+        var s = document.createElement("script");
+        s.src = srcs[i++];
+        s.onload = next;
+        s.onerror = function () { console.error("markmap: failed to load " + s.src); };
+        document.head.appendChild(s);
+      })();
+    }
+
+    function renderAll(blocks) {
+      var mk = window.markmap;
+      if (!mk || !mk.Transformer || !mk.Markmap) {
+        console.error("markmap: libraries did not initialise");
+        return;
+      }
+      var transformer = new mk.Transformer();
+      Array.prototype.forEach.call(blocks, function (el) {
+        if (el.getAttribute("data-markmap-done")) return;
+        el.setAttribute("data-markmap-done", "1");
+        var tpl = el.querySelector('script[type="text/template"]');
+        var md = (tpl ? tpl.textContent : el.textContent) || "";
+        var svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+        svg.setAttribute("class", "markmap");
+        svg.style.height = "70vh";
+        while (el.firstChild) el.removeChild(el.firstChild);
+        el.appendChild(svg);
+        try {
+          var res = transformer.transform(md.trim());
+          var fm = res.frontmatter && res.frontmatter.markmap;
+          var opts = (fm && mk.deriveOptions) ? mk.deriveOptions(fm) : undefined;
+          mk.Markmap.create(svg, opts, res.root);
+        } catch (e) {
+          console.error("markmap: render failed", e);
+        }
+      });
+    }
+
+    function init() {
+      var blocks = document.querySelectorAll(".markmap");
+      if (!blocks.length) return;
+      loadSequential(SCRIPTS, function () { renderAll(blocks); });
+    }
+
+    if (document.readyState === "loading") {
+      document.addEventListener("DOMContentLoaded", init);
+    } else {
+      init();
+    }
+  })();
+</script>

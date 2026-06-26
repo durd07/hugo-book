@@ -13,15 +13,25 @@
     let plantumlPrefix = "language-plantuml";
 
     if (document.querySelectorAll("[class^=" + plantumlPrefix + "]").length > 0) {
-      loadScript('https://cdn.jsdelivr.net/gh/jmnote/plantuml-encoder@1.2.4/dist/plantuml-encoder.min.js', () => {
+      // plantuml-encoder is vendored locally (themes/book/static/); no CDN.
+      loadScript('{{ "plantuml-encoder.min.js" | relURL }}', () => {
+        // Render through the same-origin PlantUML endpoint so we never reach out
+        // to a hardcoded external host. The deployment serves /plantuml/ itself.
+        const plantumlBase = location.origin + '/plantuml/svg/~1';
         (function () {
           Array.prototype.forEach.call(document.querySelectorAll("[class^=" + plantumlPrefix + "]"), function (code) {
+            let pre = code.parentNode;
             let image = document.createElement("IMG");
             image.loading = 'lazy'; // Lazy loading
-            //image.src = 'http://www.plantuml.com/plantuml/svg/~1' + plantumlEncoder.encode(code.innerText);
-            image.src = 'http://felixdu.dynamic.nsn-net.net/plantuml/svg/~1' + plantumlEncoder.encode(code.innerText);
-            code.parentNode.parentNode.insertBefore(image, code.parentNode);
-            code.parentNode.style.display = 'none';
+            // If /plantuml/ can't be reached (e.g. offline / local dev), fall back
+            // to showing the source instead of a broken image.
+            image.onerror = function () {
+              pre.style.display = '';
+              if (image.parentNode) image.parentNode.removeChild(image);
+            };
+            image.src = plantumlBase + plantumlEncoder.encode(code.innerText);
+            pre.parentNode.insertBefore(image, pre);
+            pre.style.display = 'none';
           });
         })();
 
