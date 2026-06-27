@@ -616,6 +616,127 @@
   })();
 </script>
 
+<!-- Account controls + per-user nav gating. Page/API access is enforced
+     server-side by the Go backend front door; this script only hides menu
+     entries the current user can't open and adds a Sign in / Sign out control
+     plus an Admin link for admins. Page HTML is shared across users, so the
+     per-user bits are resolved client-side from GET /api/auth/nav. -->
+<script>
+  (function () {
+    var API = "/api";
+
+    function hideAnchor(a) {
+      var li = a.closest ? a.closest("li") : null;
+      (li || a).style.display = "none";
+    }
+
+    fetch(API + "/auth/nav", { credentials: "same-origin" })
+      .then(function (r) { return r.ok ? r.json() : null; })
+      .then(function (nav) {
+        if (!nav) return;
+        var sections = nav.sections || {};
+        var menu = document.querySelector(".book-menu nav");
+        var anchors = menu ? Array.prototype.slice.call(menu.querySelectorAll("a")) : [];
+
+        // 1. Hide section nav entries the user can't access.
+        var rules = [
+          { key: "blog", test: function (a) { return a.pathname.indexOf("/posts") === 0; } },
+          { key: "kanban", test: function (a) { return a.pathname.indexOf("/kanban") === 0; } },
+          { key: "mindmap", test: function (a) { return a.pathname.indexOf("/mindmap") === 0; } },
+          { key: "whiteboard", test: function (a) { return a.pathname.indexOf("/whiteboard") === 0; } },
+          { key: "directory", test: function (a) { return /(^|\/)~|directory/i.test(a.getAttribute("href") || ""); } },
+          { key: "edit", test: function (a) { return /vscode/i.test(a.getAttribute("href") || ""); } }
+        ];
+        anchors.forEach(function (a) {
+          rules.forEach(function (rule) {
+            if (sections[rule.key] === false && rule.test(a)) hideAnchor(a);
+          });
+        });
+
+        // 2. Hide restricted wiki folders from the sidebar file tree.
+        var hidden = nav.hidden || [];
+        if (hidden.length) {
+          anchors.forEach(function (a) {
+            var p = (a.pathname || "").toLowerCase();
+            for (var i = 0; i < hidden.length; i++) {
+              if (p === hidden[i] || p.indexOf(hidden[i] + "/") === 0) { hideAnchor(a); break; }
+            }
+          });
+        }
+
+        // 3. Hide the "Edit this page" link when the editor section is closed.
+        if (sections.editor === false) {
+          Array.prototype.forEach.call(document.querySelectorAll(".book-edit-online"), function (a) {
+            var box = a.closest ? a.closest("div") : null;
+            (box || a).style.display = "none";
+          });
+        }
+
+        // 4. Account control in the sidebar social row (see docs/brand.html):
+        //    anonymous -> the user icon links straight to /login; signed-in -> it
+        //    opens a small menu with the display name, an Admin link (admins only)
+        //    and Sign out.
+        var acct = document.getElementById("book-account");
+        var acctBtn = document.getElementById("book-account-btn");
+        var acctMenu = document.getElementById("book-account-menu");
+        if (acct && acctBtn && acctMenu) {
+          var returnTo = encodeURIComponent(location.pathname + location.search);
+
+          if (nav.user) {
+            acct.classList.add("is-authed");
+            acctBtn.setAttribute("aria-label", "Account");
+            acctBtn.setAttribute("title", nav.user.display_name || nav.user.username);
+
+            var who = document.createElement("span");
+            who.className = "acct-name";
+            who.textContent = nav.user.display_name || nav.user.username;
+            acctMenu.appendChild(who);
+
+            if (nav.user.is_admin) {
+              var adminLink = document.createElement("a");
+              adminLink.href = "/admin/";
+              adminLink.setAttribute("role", "menuitem");
+              adminLink.textContent = "Admin";
+              acctMenu.appendChild(adminLink);
+            }
+
+            var out = document.createElement("button");
+            out.type = "button";
+            out.setAttribute("role", "menuitem");
+            out.textContent = "Sign out";
+            out.addEventListener("click", function () {
+              fetch(API + "/auth/logout", { method: "POST", credentials: "same-origin" })
+                .then(function () { location.reload(); });
+            });
+            acctMenu.appendChild(out);
+
+            var closeAcct = function () {
+              acct.classList.remove("open");
+              acctBtn.setAttribute("aria-expanded", "false");
+            };
+            acctBtn.addEventListener("click", function (e) {
+              e.stopPropagation();
+              var open = !acct.classList.contains("open");
+              acct.classList.toggle("open", open);
+              acctBtn.setAttribute("aria-expanded", open ? "true" : "false");
+            });
+            acctMenu.addEventListener("click", function (e) { e.stopPropagation(); });
+            document.addEventListener("click", function (e) { if (!acct.contains(e.target)) closeAcct(); });
+            document.addEventListener("keydown", function (e) { if (e.key === "Escape" || e.keyCode === 27) closeAcct(); });
+          } else {
+            acctBtn.setAttribute("aria-label", "Sign in");
+            acctBtn.setAttribute("title", "Sign in");
+            acctBtn.addEventListener("click", function () {
+              location.href = "/login/?return=" + returnTo;
+            });
+          }
+          acct.hidden = false;
+        }
+      })
+      .catch(function () {});
+  })();
+</script>
+
 <!-- Light/dark theme toggle -->
 <script>
   (function () {

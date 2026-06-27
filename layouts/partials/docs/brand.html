@@ -25,6 +25,19 @@
       <a href="https://github.com/durd07"><img src="/images/social/wechat.png"></a>
       <a href="#" class="fa fa-lg fa-rss"></a>
       -->
+      <!-- Account control: a user icon that signs in (anonymous) or opens a small
+           menu with the signed-in name, Admin link, and Sign out. Populated and
+           revealed client-side from /api/auth/nav (see inject/body.html). -->
+      <span class="book-account" id="book-account" hidden>
+        <button class="book-account-btn" id="book-account-btn" type="button"
+          aria-haspopup="true" aria-expanded="false" aria-label="Sign in" title="Sign in">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <circle cx="12" cy="8" r="3.6"></circle>
+            <path d="M5.5 19.5a6.6 6.6 0 0 1 13 0"></path>
+          </svg>
+        </button>
+        <span class="book-account-menu" id="book-account-menu" role="menu"></span>
+      </span>
     </div>
 </h2>
 </center>

@@ -67,6 +67,143 @@
   }
 }
 
+// Account control inline in the sidebar social-icon row: a user icon that signs
+// in (anonymous) or opens a small menu (signed-in name + Admin + Sign out).
+// Populated + revealed client-side from /api/auth/nav (inject/body.html).
+.book-account {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  vertical-align: middle;
+
+  &[hidden] {
+    display: none;
+  }
+}
+
+.book-account-btn {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  margin: 0;
+  background: none;
+  border: 0;
+  cursor: pointer;
+  line-height: 1;
+  color: var(--body-font-color);
+  opacity: 0.85;
+  transition: color 0.15s ease, opacity 0.15s ease;
+
+  svg {
+    width: 1.7em;
+    height: 1.7em;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.8;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    vertical-align: middle;
+  }
+
+  &:hover {
+    opacity: 1;
+    color: var(--color-link);
+  }
+}
+
+// Signed-in: tint the icon with the accent and add a small "online" dot.
+.book-account.is-authed .book-account-btn {
+  color: var(--color-link);
+  opacity: 1;
+
+  &::after {
+    content: "";
+    position: absolute;
+    right: -1px;
+    bottom: 1px;
+    width: 0.5em;
+    height: 0.5em;
+    border-radius: 50%;
+    background: #22c55e;
+    box-shadow: 0 0 0 2px var(--body-background);
+  }
+}
+
+.book-account-menu {
+  position: absolute;
+  top: calc(100% + 0.5em);
+  left: 50%;
+  transform: translateX(-50%) translateY(-0.35em);
+  z-index: 60;
+  min-width: 170px;
+  padding: 0.35em;
+  text-align: left;
+
+  background: var(--body-background);
+  border: $padding-1 solid var(--gray-200);
+  border-radius: 12px;
+  box-shadow: 0 14px 34px rgba(0, 0, 0, 0.28);
+
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity 0.16s ease, transform 0.16s ease, visibility 0.16s;
+
+  // Little pointer arrow toward the icon.
+  &::before {
+    content: "";
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    border: 6px solid transparent;
+    border-bottom-color: var(--gray-200);
+  }
+
+  .acct-name {
+    display: block;
+    padding: 0.4em 0.7em 0.5em;
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    opacity: 0.55;
+  }
+
+  a,
+  button {
+    display: flex;
+    align-items: center;
+    gap: 0.5em;
+    width: 100%;
+    padding: 0.5em 0.7em;
+    border: 0;
+    border-radius: 8px;
+    background: none;
+    color: var(--body-font-color);
+    font-size: 0.86rem;
+    font-weight: 600;
+    text-align: left;
+    text-decoration: none;
+    cursor: pointer;
+    transition: background 0.12s ease, color 0.12s ease;
+
+    &:hover {
+      background: rgba(127, 127, 127, 0.16);
+      color: var(--color-link);
+    }
+  }
+}
+
+.book-account.open .book-account-menu {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+  transform: translateX(-50%) translateY(0);
+}
+
 // Self-hosted visit counter, centred between the social icons and the logo.
 // Hidden until JS fills it so a stalled/offline backend leaves no empty gap.
 .footer-stats {
