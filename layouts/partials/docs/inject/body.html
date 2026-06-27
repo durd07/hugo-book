@@ -553,31 +553,26 @@
   })();
 </script>
 
-<!-- "Edit this page" -> online Markdown editor (auth-protected backend). -->
+<!-- "Edit this page" -> the static React Markdown editor at /editor/. The editor
+     is same-origin in every deployment (dev, single-port docker, nginx), so the
+     link is a plain same-origin path; it self-resolves the /api/ base at runtime. -->
 <script>
   (function () {
-    function editorApiBase() {
-      if (window.WIKI_EDITOR_API_BASE) {
-        return window.WIKI_EDITOR_API_BASE.replace(/\/+$/, "");
+    function editorBase() {
+      if (window.WIKI_EDITOR_BASE) {
+        return window.WIKI_EDITOR_BASE.replace(/\/+$/, "");
       }
-      var local = ["localhost", "127.0.0.1", "0.0.0.0"].indexOf(location.hostname) !== -1;
-      if (local && location.port === "8080") {
-        return "/api/editor";
-      }
-      if (local) {
-        return "http://localhost:8000/editor";
-      }
-      return "/api/editor";
+      return "/editor";
     }
 
     document.addEventListener("DOMContentLoaded", function () {
-      var base = editorApiBase();
+      var base = editorBase();
       Array.prototype.forEach.call(
         document.querySelectorAll("a.book-edit-online"),
         function (link) {
           var path = link.getAttribute("data-edit-path") || "";
           var ret = link.getAttribute("data-return-url") || "/";
-          link.href = base + "?path=" + encodeURIComponent(path) +
+          link.href = base + "/?path=" + encodeURIComponent(path) +
             "&return_url=" + encodeURIComponent(ret);
         }
       );
