@@ -13,11 +13,11 @@
     <a href="{{ .URL }}" {{ with .Params.class }}class="{{ . }}"{{ end }} {{ if not .Page }}target="_blank" rel="noopener"{{ end }}>
       {{- with .Params.icon }}<i class="{{ . }}"></i>&nbsp;{{ end -}}
       {{- .Pre -}}
-      {{ with .Page }}
-        {{ partial "docs/title" .Page }}
-      {{ else }}
-        {{ .Name }}
-      {{ end }}
+      {{/* Render the menu entry's own name so front-matter labels (e.g. an
+           uppercase BLOG/KANBAN/MINDMAP/WHITEBOARD) win. Hugo defaults .Name to
+           the page LinkTitle when no name is set, so unnamed page entries still
+           show their page title. */}}
+      {{- .Name -}}
       {{- .Post -}}
     </a>
     {{- with .Children }}
