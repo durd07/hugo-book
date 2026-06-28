@@ -34,6 +34,17 @@
       return;
     }
 
+    // Rich editors (e.g. the CodeMirror-based wiki Markdown editor) type into a
+    // contenteditable surface, which has no `.value`. Without this guard the "s"
+    // and "/" hotkeys would steal those keystrokes and the user could never type
+    // them inside the editor.
+    if (
+      event.target.isContentEditable ||
+      (document.activeElement && document.activeElement.isContentEditable)
+    ) {
+      return;
+    }
+
     if (input === document.activeElement) {
       return;
     }
