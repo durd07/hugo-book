@@ -470,6 +470,7 @@
 
       handle.addEventListener('pointerdown', function (e) {
         if (!mq.matches) return;
+        if (document.body.classList.contains('sidebar-hidden')) return;
         dragging = true;
         dragOffset = menu.getBoundingClientRect().width - pointerX(e);
         handle.classList.add('dragging');
@@ -491,6 +492,54 @@
     } else {
       init();
     }
+  })();
+</script>
+
+<script>
+  // Sidebar: hide/show the wide-screen navigation column and remember the choice.
+  (function () {
+    var KEY = 'sidebar.hidden';
+    var body = document.body;
+    var btn = document.getElementById('sidebar-toggle');
+    var menu = document.querySelector('.book-menu');
+    if (!btn) return;
+
+    function hidden() {
+      return body.classList.contains('sidebar-hidden');
+    }
+
+    function updateLabel() {
+      var isHidden = hidden();
+      var label = isHidden ? 'Show sidebar' : 'Hide sidebar';
+      btn.setAttribute('aria-label', label);
+      btn.setAttribute('title', label);
+      btn.setAttribute('aria-pressed', isHidden ? 'true' : 'false');
+    }
+
+    function apply(nextHidden) {
+      body.classList.toggle('sidebar-hidden', nextHidden);
+      try { localStorage.setItem(KEY, nextHidden ? '1' : '0'); } catch (e) {}
+      updateLabel();
+    }
+
+    updateLabel();
+    if (menu) {
+      menu.addEventListener('mouseenter', function () {
+        if (!hidden()) body.classList.add('sidebar-hover');
+      });
+      menu.addEventListener('mouseleave', function () {
+        body.classList.remove('sidebar-hover');
+      });
+    }
+    btn.addEventListener('mouseenter', function () {
+      if (!hidden()) body.classList.add('sidebar-hover');
+    });
+    btn.addEventListener('mouseleave', function () {
+      body.classList.remove('sidebar-hover');
+    });
+    btn.addEventListener('click', function () {
+      apply(!hidden());
+    });
   })();
 </script>
 

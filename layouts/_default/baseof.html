@@ -26,11 +26,15 @@
           c.remove("book-panel-compact", "book-panel-liquid-glass");
           c.add("book-panel-" + s);
         }
+        if (localStorage.getItem("sidebar.hidden") === "1") {
+          document.body.classList.add("sidebar-hidden");
+        }
       } catch (e) {}
     })();
   </script>
   <input type="checkbox" class="hidden toggle" id="menu-control" />
   <input type="checkbox" class="hidden toggle" id="toc-control" />
+  <button type="button" class="sidebar-toggle-fab" id="sidebar-toggle" aria-label="Hide sidebar" title="Hide sidebar" aria-pressed="false"></button>
   <main class="container flex">
     <aside class="book-menu" id="book-menu">
       <div class="book-menu-content">

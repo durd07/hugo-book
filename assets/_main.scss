@@ -109,6 +109,10 @@ $sidebar-width-default: 22rem;
   display: none;
 }
 
+.sidebar-toggle-fab {
+  display: none;
+}
+
 @media screen and (min-width: $mobile-breakpoint) {
   .menu-resizer {
     display: block;
@@ -128,6 +132,96 @@ $sidebar-width-default: 22rem;
   body.sidebar-resizing {
     cursor: col-resize;
     user-select: none;
+  }
+
+  .sidebar-toggle-fab {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    position: fixed;
+    top: $padding-16 + $padding-8;
+    inset-inline-start: calc(var(--sidebar-width, #{$menu-width}) - 1.25rem);
+    z-index: 43;
+    width: 2.5rem;
+    height: 2.5rem;
+    padding: 0;
+    color: var(--body-font-color);
+    background: var(--wiki-editor-panel);
+    border: $padding-1 solid var(--wiki-editor-border);
+    border-radius: 50%;
+    box-shadow: var(--wiki-editor-shadow);
+    cursor: pointer;
+    opacity: 0;
+    pointer-events: none;
+    transition: inset-inline-start 0.2s ease-in-out, color 0.15s ease, opacity 0.15s ease, transform 0.15s ease;
+
+    &::before {
+      content: "";
+      width: 0.58em;
+      height: 0.58em;
+      border-right: 2px solid currentColor;
+      border-bottom: 2px solid currentColor;
+      opacity: 0.75;
+      transform: translateX(0.12em) rotate(135deg);
+      transition: transform 0.2s ease, opacity 0.15s ease;
+    }
+
+    &:hover {
+      color: var(--color-link);
+      opacity: 1;
+      transform: scale(1.04);
+
+      &::before {
+        opacity: 1;
+      }
+    }
+  }
+
+  body.sidebar-hover .sidebar-toggle-fab,
+  body.sidebar-hidden .sidebar-toggle-fab,
+  .sidebar-toggle-fab:hover,
+  .sidebar-toggle-fab:focus-visible {
+    opacity: 0.88;
+    pointer-events: auto;
+  }
+
+  body.book-panel-liquid-glass .sidebar-toggle-fab {
+    top: $padding-16 + $padding-16;
+    inset-inline-start: calc(var(--sidebar-width, #{$sidebar-width-default}) - #{$padding-16} - 1.25rem);
+  }
+
+  body.sidebar-hidden {
+    .book-menu {
+      flex: 0 0 0;
+      visibility: hidden;
+    }
+
+    .book-menu .book-menu-content {
+      pointer-events: none;
+      opacity: 0;
+      transform: translateX(calc(-100% - #{$padding-16}));
+    }
+
+    .menu-resizer {
+      display: none;
+    }
+
+    .sidebar-toggle-fab {
+      inset-inline-start: $padding-8;
+
+      &::before {
+        // Same right-pointing chevron as a collapsed sidebar folder.
+        transform: translateX(-0.12em) rotate(-45deg);
+      }
+    }
+  }
+
+  body.book-panel-liquid-glass.sidebar-hidden .book-menu {
+    flex: 0 0 0;
+  }
+
+  body[dir="rtl"].sidebar-hidden .book-menu .book-menu-content {
+    transform: translateX(calc(100% + #{$padding-16}));
   }
 }
 
