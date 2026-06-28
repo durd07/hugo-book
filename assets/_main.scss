@@ -139,7 +139,7 @@ $sidebar-width-default: 22rem;
     align-items: center;
     justify-content: center;
     position: fixed;
-    top: $padding-16 + $padding-8;
+    top: $padding-16 * 3 + $padding-8;
     inset-inline-start: calc(var(--sidebar-width, #{$menu-width}) - 1.25rem);
     z-index: 43;
     width: 2.5rem;
@@ -186,7 +186,7 @@ $sidebar-width-default: 22rem;
   }
 
   body.book-panel-liquid-glass .sidebar-toggle-fab {
-    top: $padding-16 + $padding-16;
+    top: $padding-16 * 4;
     inset-inline-start: calc(var(--sidebar-width, #{$sidebar-width-default}) - #{$padding-16} - 1.25rem);
   }
 
