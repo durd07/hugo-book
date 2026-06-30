@@ -9453,3 +9453,156 @@ html {
 ::-webkit-scrollbar-corner {
   background: transparent;
 }
+
+/* =========================================================================
+   Diagrams + images: hover zoom button + fullscreen lightbox
+   (behaviour lives in static/media-zoom.js)
+   ========================================================================= */
+.markdown .mmz-host {
+  position: relative;
+}
+
+// Wrapper inserted around content images so the button can sit on top.
+.markdown .mmz-host.mmz-img {
+  display: inline-block;
+  max-width: 100%;
+  line-height: 0;
+}
+
+.mmz-toolbar {
+  position: absolute;
+  top: $padding-8;
+  inset-inline-end: $padding-8;
+  z-index: 2;
+  display: flex;
+  gap: $padding-4;
+  opacity: 0;
+  transition: opacity 0.15s ease-in-out;
+  pointer-events: none;
+}
+
+.markdown .mmz-host:hover .mmz-toolbar,
+.mmz-toolbar:focus-within {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+// Keep the button discoverable on touch devices that have no hover.
+@media (hover: none) {
+  .mmz-toolbar {
+    opacity: 1;
+    pointer-events: auto;
+  }
+}
+
+// Match the code-block copy button (.copy-code-button) sizing + look.
+.mmz-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.4rem;
+  height: 1.4rem;
+  padding: 0;
+  margin: 0;
+  color: var(--body-font-color);
+  background: var(--gray-200);
+  border: $padding-1 solid var(--gray-200);
+  border-radius: $border-radius;
+  cursor: pointer;
+}
+
+.mmz-icon:hover {
+  background: var(--gray-500);
+}
+
+.mmz-icon svg {
+  display: block;
+  width: 0.8rem;
+  height: 0.8rem;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+body.mmz-lock {
+  overflow: hidden;
+}
+
+.mmz-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+}
+
+.mmz-overlay[hidden] {
+  display: none;
+}
+
+.mmz-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.66);
+  backdrop-filter: blur(2px);
+}
+
+.mmz-stage {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  cursor: grab;
+  touch-action: none;
+}
+
+.mmz-stage.grabbing {
+  cursor: grabbing;
+}
+
+.mmz-zoom {
+  position: absolute;
+  top: 0;
+  left: 0;
+  transform-origin: 0 0;
+  will-change: transform;
+}
+
+.mmz-zoom svg,
+.mmz-zoom img {
+  display: block;
+  background: #ffffff;
+  border-radius: 6px;
+  box-shadow: 0 12px 48px rgba(0, 0, 0, 0.5);
+}
+
+.mmz-tools {
+  position: absolute;
+  top: 0.9rem;
+  right: 0.9rem;
+  display: flex;
+  gap: 0.375rem;
+}
+
+.mmz-btn {
+  min-width: 36px;
+  height: 36px;
+  padding: 0 0.5rem;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  border-radius: 8px;
+  background: rgba(28, 28, 30, 0.72);
+  color: #fff;
+  font-size: 18px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.mmz-btn:hover {
+  background: rgba(64, 64, 68, 0.92);
+}
+
+@media print {
+  .mmz-toolbar,
+  .mmz-overlay {
+    display: none !important;
+  }
+}
