@@ -87,6 +87,23 @@
     if (window.mermaid) { mermaid.initialize({ startOnLoad: true }); }
   </script>
 {{ end }}
+  {{ if .Store.Get "hasGraphviz" }}
+  <!-- Graphviz (DOT) is vendored locally (see themes/book/static/graphviz/); self-extracting wasm, no CDN. -->
+  <script type="module">
+    import { Graphviz } from "{{ "graphviz/graphviz.min.js" | relURL }}";
+    const graphviz = await Graphviz.load();
+    document.querySelectorAll("pre.graphviz-dot").forEach((pre) => {
+      try {
+        const holder = document.createElement("div");
+        holder.className = "graphviz-diagram md-diagram";
+        holder.innerHTML = graphviz.dot(pre.textContent || "");
+        pre.replaceWith(holder);
+      } catch (e) {
+        /* invalid DOT: leave the source visible */
+      }
+    });
+  </script>
+{{ end }}
 </body>
 
 </html>

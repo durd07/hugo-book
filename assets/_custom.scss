@@ -9606,3 +9606,24 @@ body.mmz-lock {
     display: none !important;
   }
 }
+
+/* =========================================================================
+   DOT / Graphviz diagrams (rendered client-side; see baseof.html + media-zoom.js)
+   Graphviz emits black-on-transparent SVGs, so the holder gets a light card
+   background to stay readable on dark themes (same approach as PlantUML images).
+   ========================================================================= */
+.markdown .graphviz-diagram {
+  display: block;
+  margin: 0.9rem auto;
+  max-width: 100%;
+  background: #ffffff;
+  border-radius: $border-radius;
+  padding: 12px;
+  overflow: auto;
+  text-align: center;
+}
+
+.markdown .graphviz-diagram svg {
+  max-width: 100%;
+  height: auto;
+}

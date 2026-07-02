@@ -229,6 +229,9 @@
   function scan() {
     var ms = document.querySelectorAll(".markdown .mermaid");
     for (var i = 0; i < ms.length; i++) enhanceMermaid(ms[i]);
+    // DOT/Graphviz holders also contain a rendered <svg>; reuse the same toolbar.
+    var gv = document.querySelectorAll(".markdown .graphviz-diagram");
+    for (var g = 0; g < gv.length; g++) enhanceMermaid(gv[g]);
     var imgs = document.querySelectorAll(".markdown img");
     for (var j = 0; j < imgs.length; j++) enhanceImage(imgs[j]);
   }
