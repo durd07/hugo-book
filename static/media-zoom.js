@@ -196,14 +196,25 @@
     return span;
   }
 
+  // Skip decorative / tile images by style (class or layout), never by pixel size.
+  function skipByStyle(img) {
+    return img.classList.contains("link-favicon")
+      || img.classList.contains("no-zoom")
+      || !!img.closest(".grid-container")
+      || !!img.closest(".no-zoom");
+  }
+
   function enhanceImage(img) {
     var s = img.dataset.mmzReady;
     if (s === "1" || s === "skip") return;
     if (img.closest(".mmz-overlay") || img.closest(".mmz-toolbar")) return;
+    if (skipByStyle(img)) {
+      img.dataset.mmzReady = "skip";
+      return;
+    }
 
-    // Wait for the image to load so we know its real size (and can skip ones
-    // that fail, e.g. an unreachable PlantUML endpoint).
-    if (!img.complete || !img.naturalWidth) {
+    // Wait for load so broken images (e.g. unreachable PlantUML) are skipped.
+    if (!img.complete || img.naturalWidth === 0) {
       if (s !== "wait") {
         img.dataset.mmzReady = "wait";
         img.addEventListener("load", function () {
@@ -214,11 +225,6 @@
           img.dataset.mmzReady = "skip";
         }, { once: true });
       }
-      return;
-    }
-    // Leave tiny images (icons, badges, emoji) alone.
-    if (img.naturalWidth < 48 && img.naturalHeight < 48) {
-      img.dataset.mmzReady = "skip";
       return;
     }
     img.dataset.mmzReady = "1";
