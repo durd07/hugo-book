@@ -28,3 +28,8 @@
 {{ with $script.Content }}
   <script>{{ . | safeJS }}</script>
 {{ end }}
+
+{{ $runner := resources.Get "runner.js" | resources.Minify }}
+{{ with $runner.Content }}
+  <script>{{ . | safeJS }}</script>
+{{ end }}
