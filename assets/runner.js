@@ -2,12 +2,20 @@
   var PLAY_ICON =
     '<svg viewBox="0 0 16 16" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M8 0a8 8 0 1 1 0 16A8 8 0 0 1 8 0ZM1.5 8a6.5 6.5 0 1 0 13 0 6.5 6.5 0 0 0-13 0Zm10.28-1.72-4.5 2.612c-.54.313-1.233-.063-1.233-.69V6.598c0-.627.693-1.003 1.233-.69l4.5 2.612c.54.314.54 1.068 0 1.381Z"></path></svg>';
 
-  // Same gutter-stripping as clipboard.js so the sent code has no line numbers.
+  // Extract code text while dropping line-number gutters. Chroma emits the
+  // gutter as class-based spans (.ln inline gutter, .lnt table gutter) whose
+  // visibility is CSS-only — textContent ignores CSS, so they must be
+  // removed by hand. The inline user-select check covers other highlighters
+  // that mark gutters non-selectable inline.
   function codeText(code) {
     var clone = code.cloneNode(true);
     clone.querySelectorAll("span").forEach(function (span) {
+      var cls = span.className || "";
       var style = span.style;
-      if (style && (style.userSelect === "none" || style.webkitUserSelect === "none")) {
+      if (
+        /(^|\s)ln(t)?(\s|$)/.test(cls) ||
+        (style && (style.userSelect === "none" || style.webkitUserSelect === "none"))
+      ) {
         span.remove();
       }
     });
