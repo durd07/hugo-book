@@ -822,5 +822,6 @@
 
 <!-- AI chat widget: floating button on every page (self-hiding when the
      backend's AI feature is disabled). -->
-<link rel="stylesheet" href="/ai/widget.css">
-<script defer src="/ai/widget.js"></script>
+{{- $v := now.Unix -}}
+<link rel="stylesheet" href="/ai/widget.css?v={{ $v }}">
+<script defer src="/ai/widget.js?v={{ $v }}"></script>
