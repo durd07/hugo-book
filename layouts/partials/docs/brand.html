@@ -25,18 +25,59 @@
       <a href="https://github.com/durd07"><img src="/images/social/wechat.png"></a>
       <a href="#" class="fa fa-lg fa-rss"></a>
       -->
-      <!-- Account control: a user icon that signs in (anonymous) or opens a small
-           menu with the signed-in name, Admin link, and Sign out. Populated and
-           revealed client-side from /api/auth/nav (see inject/body.html). -->
+      <!-- Account control: the user icon always opens the site menu — account
+           (sign in / name + sign out), AI chat + Admin links (gated by role),
+           and the display toggles (theme / panel style / code line numbers).
+           Populated and revealed client-side from /api/auth/nav (see
+           inject/body.html); the toggle rows work even without a session. -->
       <span class="book-account" id="book-account" hidden>
         <button class="book-account-btn" id="book-account-btn" type="button"
-          aria-haspopup="true" aria-expanded="false" aria-label="Sign in" title="Sign in">
+          aria-haspopup="true" aria-expanded="false" aria-controls="book-account-menu"
+          aria-label="Account menu" title="Account menu">
           <svg viewBox="0 0 24 24" aria-hidden="true">
             <circle cx="12" cy="8" r="3.6"></circle>
             <path d="M5.5 19.5a6.6 6.6 0 0 1 13 0"></path>
           </svg>
         </button>
-        <span class="book-account-menu" id="book-account-menu" role="menu"></span>
+        <span class="book-account-menu" id="book-account-menu" role="menu">
+          <span class="acct-name" id="book-account-name" hidden></span>
+          <a role="menuitem" href="/ai/">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l1.9 4.6 4.6 1.9-4.6 1.9L12 16l-1.9-4.6L5.5 9.5l4.6-1.9z"/><path d="M19 15l.8 1.9 1.9.8-1.9.8L19 20.4l-.8-1.9-1.9-.8 1.9-.8z"/></svg>
+            <span class="acct-label">AI Chat</span>
+          </a>
+          <a role="menuitem" href="/admin/" id="acct-admin" hidden>
+            <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09a1.65 1.65 0 0 0-1-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09a1.65 1.65 0 0 0 1.51-1 1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33h.01a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51h.01a1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82v.01a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+            <span class="acct-label">Admin</span>
+          </a>
+          <span class="acct-sep" role="separator"></span>
+          <button role="menuitem" type="button" id="theme-toggle" class="acct-toggle theme-toggle" aria-pressed="false">
+            <svg class="theme-icon-dark" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>
+            <svg class="theme-icon-light" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg>
+            <span class="acct-label">Theme</span>
+            <span class="acct-state" id="acct-theme-state"></span>
+          </button>
+          <button role="menuitem" type="button" id="panel-style-toggle" class="acct-toggle panel-style-toggle">
+            <svg class="panel-icon-compact" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="9" y1="3" x2="9" y2="21"/></svg>
+            <svg class="panel-icon-glass" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"/></svg>
+            <span class="acct-label">Panels</span>
+            <span class="acct-state" id="acct-panel-state"></span>
+          </button>
+          <button role="menuitem" type="button" id="code-line-toggle" class="acct-toggle code-line-toggle">
+            <svg class="code-lines-on" viewBox="0 0 24 24" aria-hidden="true"><text x="2.5" y="9">1</text><text x="2.5" y="19">2</text><path d="M9 7h12"/><path d="M9 17h12"/></svg>
+            <svg class="code-lines-off" viewBox="0 0 24 24" aria-hidden="true"><text x="2.5" y="9">1</text><text x="2.5" y="19">2</text><path d="M9 7h12"/><path d="M9 17h12"/><path d="M3.5 21 21 3.5"/></svg>
+            <span class="acct-label">Line numbers</span>
+            <span class="acct-state" id="acct-lines-state"></span>
+          </button>
+          <span class="acct-sep" role="separator"></span>
+          <a role="menuitem" href="/login/" id="acct-signin">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><path d="m10 17 5-5-5-5"/><path d="M15 12H3"/></svg>
+            <span class="acct-label">Sign in</span>
+          </a>
+          <button role="menuitem" type="button" id="acct-signout" hidden>
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="m16 17 5-5-5-5"/><path d="M21 12H9"/></svg>
+            <span class="acct-label">Sign out</span>
+          </button>
+        </span>
       </span>
     </div>
 </h2>

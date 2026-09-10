@@ -51,6 +51,7 @@
   (function () {
     var btn = document.getElementById("code-line-toggle");
     if (!btn) return;
+    var state = document.getElementById("acct-lines-state");
 
     var root = document.documentElement;
     var KEY = "code-line-numbers";
@@ -64,6 +65,7 @@
       btn.setAttribute("aria-label", label);
       btn.setAttribute("title", label);
       btn.setAttribute("aria-pressed", shown() ? "true" : "false");
+      if (state) state.textContent = shown() ? "On" : "Off";
     }
 
     function apply(nextShown) {
@@ -634,6 +636,7 @@
   (function () {
     var btn = document.getElementById("panel-style-toggle");
     if (!btn) return;
+    var state = document.getElementById("acct-panel-state");
 
     var body = document.body;
     var KEY = "panel-style";
@@ -649,6 +652,7 @@
       btn.setAttribute("aria-label", label);
       btn.setAttribute("title", label);
       btn.setAttribute("aria-pressed", isGlass() ? "true" : "false");
+      if (state) state.textContent = isGlass() ? "Liquid" : "Compact";
     }
 
     function apply(glass) {
@@ -679,10 +683,77 @@
       (li || a).style.display = "none";
     }
 
+    // 4. Account menu in the sidebar social row (see docs/brand.html):
+    //    the user icon always opens the site menu — signed-in name,
+    //    AI chat + Admin links (gated), display toggles (wired by the
+    //    dedicated scripts below via the same button ids) and
+    //    Sign in / Sign out. Runs even when /auth/nav is unreachable so
+    //    the display toggles stay available (anonymous state).
+    function setupAccount(user) {
+      var acct = document.getElementById("book-account");
+      var acctBtn = document.getElementById("book-account-btn");
+      var acctMenu = document.getElementById("book-account-menu");
+      if (!acct || !acctBtn || !acctMenu || acctBtn.dataset.wired) return;
+      acctBtn.dataset.wired = "1";
+
+      var returnTo = encodeURIComponent(location.pathname + location.search);
+      var nameEl = document.getElementById("book-account-name");
+      var adminEl = document.getElementById("acct-admin");
+      var signInEl = document.getElementById("acct-signin");
+      var signOutEl = document.getElementById("acct-signout");
+
+      var setAuthed = function (u) {
+        if (u) {
+          acct.classList.add("is-authed");
+          acctBtn.setAttribute("title", u.display_name || u.username);
+          if (nameEl) {
+            nameEl.textContent = u.display_name || u.username;
+            nameEl.hidden = false;
+          }
+          if (adminEl) adminEl.hidden = !u.is_admin;
+          if (signInEl) signInEl.hidden = true;
+          if (signOutEl) signOutEl.hidden = false;
+        } else {
+          if (nameEl) nameEl.hidden = true;
+          if (adminEl) adminEl.hidden = true;
+          if (signInEl) {
+            signInEl.hidden = false;
+            signInEl.href = "/login/?return=" + returnTo;
+          }
+          if (signOutEl) signOutEl.hidden = true;
+        }
+      };
+
+      if (signOutEl) {
+        signOutEl.addEventListener("click", function () {
+          fetch(API + "/auth/logout", { method: "POST", credentials: "same-origin" })
+            .then(function () { location.reload(); });
+        });
+      }
+
+      var closeAcct = function (returnFocus) {
+        acct.classList.remove("open");
+        acctBtn.setAttribute("aria-expanded", "false");
+        if (returnFocus) acctBtn.focus();
+      };
+      acctBtn.addEventListener("click", function (e) {
+        e.stopPropagation();
+        var open = !acct.classList.contains("open");
+        acct.classList.toggle("open", open);
+        acctBtn.setAttribute("aria-expanded", open ? "true" : "false");
+      });
+      acctMenu.addEventListener("click", function (e) { e.stopPropagation(); });
+      document.addEventListener("click", function (e) { if (!acct.contains(e.target)) closeAcct(); });
+      document.addEventListener("keydown", function (e) { if (e.key === "Escape" || e.keyCode === 27) closeAcct(true); });
+
+      setAuthed(user);
+      acct.hidden = false;
+    }
+
     fetch(API + "/auth/nav", { credentials: "same-origin" })
       .then(function (r) { return r.ok ? r.json() : null; })
       .then(function (nav) {
-        if (!nav) return;
+        if (nav) {
         var sections = nav.sections || {};
         var menu = document.querySelector(".book-menu nav");
         var anchors = menu ? Array.prototype.slice.call(menu.querySelectorAll("a")) : [];
@@ -720,77 +791,21 @@
             (box || a).style.display = "none";
           });
         }
-
-        // 4. Account control in the sidebar social row (see docs/brand.html):
-        //    anonymous -> the user icon links straight to /login; signed-in -> it
-        //    opens a small menu with the display name, an Admin link (admins only)
-        //    and Sign out.
-        var acct = document.getElementById("book-account");
-        var acctBtn = document.getElementById("book-account-btn");
-        var acctMenu = document.getElementById("book-account-menu");
-        if (acct && acctBtn && acctMenu) {
-          var returnTo = encodeURIComponent(location.pathname + location.search);
-
-          if (nav.user) {
-            acct.classList.add("is-authed");
-            acctBtn.setAttribute("aria-label", "Account");
-            acctBtn.setAttribute("title", nav.user.display_name || nav.user.username);
-
-            var who = document.createElement("span");
-            who.className = "acct-name";
-            who.textContent = nav.user.display_name || nav.user.username;
-            acctMenu.appendChild(who);
-
-            if (nav.user.is_admin) {
-              var adminLink = document.createElement("a");
-              adminLink.href = "/admin/";
-              adminLink.setAttribute("role", "menuitem");
-              adminLink.textContent = "Admin";
-              acctMenu.appendChild(adminLink);
-            }
-
-            var out = document.createElement("button");
-            out.type = "button";
-            out.setAttribute("role", "menuitem");
-            out.textContent = "Sign out";
-            out.addEventListener("click", function () {
-              fetch(API + "/auth/logout", { method: "POST", credentials: "same-origin" })
-                .then(function () { location.reload(); });
-            });
-            acctMenu.appendChild(out);
-
-            var closeAcct = function () {
-              acct.classList.remove("open");
-              acctBtn.setAttribute("aria-expanded", "false");
-            };
-            acctBtn.addEventListener("click", function (e) {
-              e.stopPropagation();
-              var open = !acct.classList.contains("open");
-              acct.classList.toggle("open", open);
-              acctBtn.setAttribute("aria-expanded", open ? "true" : "false");
-            });
-            acctMenu.addEventListener("click", function (e) { e.stopPropagation(); });
-            document.addEventListener("click", function (e) { if (!acct.contains(e.target)) closeAcct(); });
-            document.addEventListener("keydown", function (e) { if (e.key === "Escape" || e.keyCode === 27) closeAcct(); });
-          } else {
-            acctBtn.setAttribute("aria-label", "Sign in");
-            acctBtn.setAttribute("title", "Sign in");
-            acctBtn.addEventListener("click", function () {
-              location.href = "/login/?return=" + returnTo;
-            });
-          }
-          acct.hidden = false;
         }
+
+        setupAccount(nav && nav.user);
       })
-      .catch(function () {});
+      .catch(function () { setupAccount(null); });
   })();
 </script>
 
-<!-- Light/dark theme toggle -->
+<!-- Display toggles inside the account dropdown (theme / panel style / code
+     line numbers). Each updates its state chip in the menu. -->
 <script>
   (function () {
     var btn = document.getElementById("theme-toggle");
     if (!btn) return;
+    var state = document.getElementById("acct-theme-state");
 
     function currentTheme() {
       return document.documentElement.getAttribute("data-theme") || "dark";
@@ -800,6 +815,8 @@
       var label = theme === "dark" ? "Switch to light theme" : "Switch to dark theme";
       btn.setAttribute("aria-label", label);
       btn.setAttribute("title", label);
+      btn.setAttribute("aria-pressed", theme === "light" ? "true" : "false");
+      if (state) state.textContent = theme === "dark" ? "Dark" : "Light";
     }
 
     function applyTheme(theme) {

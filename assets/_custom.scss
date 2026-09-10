@@ -56,9 +56,9 @@
   }
 }
 
-// Account control inline in the sidebar social-icon row: a user icon that signs
-// in (anonymous) or opens a small menu (signed-in name + Admin + Sign out).
-// Populated + revealed client-side from /api/auth/nav (inject/body.html).
+// Account control inline in the sidebar social-icon row: the user icon opens
+// the site menu (account + AI/Admin links + display toggles). Populated +
+// revealed client-side from /api/auth/nav (inject/body.html).
 .book-account {
   position: relative;
   display: inline-flex;
@@ -120,24 +120,32 @@
   }
 }
 
+// Account dropdown inline in the sidebar social-icon row: the user icon opens
+// the site menu — account (sign in / name + sign out), AI chat + Admin links
+// and the display toggles. Populated + revealed client-side from /api/auth/nav
+// (inject/body.html). Right-anchored under the icon so the menu stays inside
+// the sidebar column (.book-menu-content clips overflowing content).
 .book-account-menu {
   position: absolute;
-  top: calc(100% + 0.5em);
-  left: 50%;
-  transform: translateX(-50%) translateY(-0.35em);
+  top: calc(100% + 0.6em);
+  // Anchored to the account control's right edge; at the sidebar's minimum
+  // dragged width the 208px menu still fits inside .book-menu-content, whose
+  // overflow:hidden would otherwise clip it.
+  right: 0;
   z-index: 60;
-  min-width: 170px;
-  padding: 0.35em;
+  min-width: 208px;
+  padding: 0.4em;
   text-align: left;
 
   background: var(--body-background);
   border: $padding-1 solid var(--gray-200);
-  border-radius: 12px;
+  border-radius: 14px;
   box-shadow: 0 14px 34px rgba(0, 0, 0, 0.28);
 
   opacity: 0;
   visibility: hidden;
   pointer-events: none;
+  transform: translateY(-0.35em);
   transition: opacity 0.16s ease, transform 0.16s ease, visibility 0.16s;
 
   // Little pointer arrow toward the icon.
@@ -145,8 +153,7 @@
     content: "";
     position: absolute;
     bottom: 100%;
-    left: 50%;
-    transform: translateX(-50%);
+    right: 1em;
     border: 6px solid transparent;
     border-bottom-color: var(--gray-200);
   }
@@ -159,17 +166,31 @@
     text-transform: uppercase;
     letter-spacing: 0.05em;
     opacity: 0.55;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+
+    &[hidden] {
+      display: none;
+    }
+  }
+
+  .acct-sep {
+    display: block;
+    height: 1px;
+    margin: 0.35em 0.3em;
+    background: var(--gray-200);
   }
 
   a,
   button {
     display: flex;
     align-items: center;
-    gap: 0.5em;
+    gap: 0.55em;
     width: 100%;
-    padding: 0.5em 0.7em;
+    padding: 0.5em 0.6em;
     border: 0;
-    border-radius: 8px;
+    border-radius: 9px;
     background: none;
     color: var(--body-font-color);
     font-size: 0.86rem;
@@ -179,10 +200,55 @@
     cursor: pointer;
     transition: background 0.12s ease, color 0.12s ease;
 
+    // The row layout above must not defeat the hidden attribute (role-gated
+    // entries: Admin, Sign out — swapped client-side by inject/body.html).
+    &[hidden] {
+      display: none;
+    }
+
+    svg {
+      flex: none;
+      width: 1.05em;
+      height: 1.05em;
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      opacity: 0.75;
+    }
+
     &:hover {
       background: rgba(127, 127, 127, 0.16);
       color: var(--color-link);
     }
+  }
+
+  // Toggle rows keep their label flush left and show the current value as a
+  // small pill on the right (updated by the scripts in inject/body.html).
+  .acct-toggle {
+    .acct-label {
+      flex: 1;
+    }
+
+    .acct-state {
+      flex: none;
+      padding: 0.14em 0.6em;
+      font-size: 0.7rem;
+      font-weight: 700;
+      color: var(--color-link);
+      background: color-mix(in srgb, var(--color-link) 12%, transparent);
+      border-radius: 999px;
+    }
+  }
+
+  // Line-number glyphs draw digits as filled text, not strokes.
+  #code-line-toggle text {
+    fill: currentColor;
+    stroke: none;
+    font-family: "Roboto Mono", monospace;
+    font-size: 0.55rem;
+    font-weight: 600;
   }
 }
 
@@ -190,7 +256,22 @@
   opacity: 1;
   visibility: visible;
   pointer-events: auto;
-  transform: translateX(-50%) translateY(0);
+  transform: translateY(0);
+}
+
+// Liquid-glass mode: the menu follows the floating-panel chrome.
+body.book-panel-liquid-glass .book-account-menu {
+  background: var(--wiki-editor-panel);
+  border-color: var(--wiki-editor-border);
+  box-shadow: var(--wiki-editor-shadow);
+
+  &::before {
+    border-bottom-color: var(--wiki-editor-border);
+  }
+
+  .acct-sep {
+    background: var(--wiki-editor-border);
+  }
 }
 
 // Self-hosted visit counter, centred between the social icons and the logo.
@@ -220,73 +301,13 @@
   }
 }
 
-// Display toggles (theme / panel style / code line numbers) sit inline in the
-// footer social-icon row, spaced like the social icons (same $padding-8 gap).
+// Display toggles (theme / panel style / code line numbers) live as rows in
+// the account dropdown. Only the icon for the CURRENT state is shown; the
+// scripts in inject/body.html swap the state chip text.
 .theme-toggle,
 .panel-style-toggle,
 .code-line-toggle {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  vertical-align: middle;
-  padding: 0;
-  margin: 0;
-  margin-inline-end: $padding-8;
-
-  color: var(--body-font-color);
-  background: none;
-  border: 0;
-  cursor: pointer;
-  line-height: 1;
-  opacity: 0.85;
-  transition: color 0.15s ease, opacity 0.15s ease;
-
-  svg {
-    width: 1.5em;
-    height: 1.5em;
-    fill: none;
-    stroke: currentColor;
-    stroke-width: 2;
-    stroke-linecap: round;
-    stroke-linejoin: round;
-  }
-
-  text {
-    fill: currentColor;
-    stroke: none;
-    font-family: "Roboto Mono", monospace;
-    font-size: 0.55rem;
-    font-weight: 600;
-  }
-
-  &:hover {
-    opacity: 1;
-    color: var(--color-link);
-  }
-
-  // Show only the icon for the currently active theme.
   .theme-icon-light {
-    display: none;
-  }
-}
-
-.code-line-toggle {
-  width: 1.6em;
-  height: 1.6em;
-
-  svg {
-    width: 1.6em;
-    height: 1.6em;
-    transform: none;
-  }
-
-  text {
-    font-size: 0.58rem;
-  }
-
-  // Default state shows the "off" (struck-through) glyph since line numbers
-  // are hidden by default.
-  .code-lines-on {
     display: none;
   }
 }
@@ -311,6 +332,14 @@ body.book-panel-liquid-glass .panel-style-toggle {
   }
   .panel-icon-glass {
     display: inline-block;
+  }
+}
+
+// Default state shows the "off" (struck-through) glyph since line numbers
+// are hidden by default.
+.code-line-toggle {
+  .code-lines-on {
+    display: none;
   }
 }
 
