@@ -295,6 +295,16 @@ body.book-panel-liquid-glass .book-account-menu {
   }
 }
 
+// Content-page text inputs (homepage search boxes etc.) get the same
+// single-border focus treatment as the sidebar search / AI chat input:
+// accent border + soft glow. outline:none because the global :focus-visible
+// ring would stack a second border on top.
+.markdown input[type="text"]:focus {
+  outline: none;
+  border-color: var(--color-link);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-link) 15%, transparent);
+}
+
 // Display toggles (theme / panel style / code line numbers) live as rows in
 // the account dropdown. Only the icon for the CURRENT state is shown; the
 // scripts in inject/body.html swap the state chip text.
