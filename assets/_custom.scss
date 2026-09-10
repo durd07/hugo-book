@@ -125,6 +125,14 @@
 // and the display toggles. Populated + revealed client-side from /api/auth/nav
 // (inject/body.html). Right-anchored under the icon so the menu stays inside
 // the sidebar column (.book-menu-content clips overflowing content).
+
+// App nav slot: pages whose nav is app-specific (/ai/, /admin/) override the
+// "menu" template with the brand block + this slot; the page's app portals
+// its own nav (chat sessions / admin sections) into it.
+.app-menu-slot {
+  margin-top: $padding-8;
+}
+
 .book-account-menu {
   position: absolute;
   top: calc(100% + 0.6em);

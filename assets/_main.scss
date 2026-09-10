@@ -39,7 +39,9 @@ img {
   vertical-align: baseline;
 }
 
-:focus {
+// Keyboard focus only: mouse/touch clicks must not draw the outline ring;
+// tabbing through controls still shows it.
+:focus-visible {
   @include outline;
 }
 
