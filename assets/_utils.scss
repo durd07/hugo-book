@@ -86,7 +86,9 @@ input.toggle {
 }
 
 @mixin outline {
-  outline-style: auto;
-  outline-color: currentColor;
-  outline-color: -webkit-focus-ring-color;
+  // Soft accent ring instead of outline-style: auto — the UA auto ring reads
+  // as a heavy black box on light themes. Paired with :focus-visible-only
+  // application (see _main.scss) so mouse clicks never draw anything.
+  outline: 2px solid color-mix(in srgb, var(--color-link, currentColor) 70%, transparent);
+  outline-offset: 2px;
 }
