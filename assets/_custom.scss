@@ -156,16 +156,6 @@
   transform: translateY(-0.35em);
   transition: opacity 0.16s ease, transform 0.16s ease, visibility 0.16s;
 
-  // Little pointer arrow toward the icon.
-  &::before {
-    content: "";
-    position: absolute;
-    bottom: 100%;
-    right: 1em;
-    border: 6px solid transparent;
-    border-bottom-color: var(--gray-200);
-  }
-
   .acct-name {
     display: block;
     padding: 0.4em 0.7em 0.5em;
@@ -272,10 +262,6 @@ body.book-panel-liquid-glass .book-account-menu {
   background: var(--wiki-editor-panel);
   border-color: var(--wiki-editor-border);
   box-shadow: var(--wiki-editor-shadow);
-
-  &::before {
-    border-bottom-color: var(--wiki-editor-border);
-  }
 
   .acct-sep {
     background: var(--wiki-editor-border);

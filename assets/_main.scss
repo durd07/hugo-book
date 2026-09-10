@@ -515,8 +515,12 @@ body[dir="rtl"] .book-menu {
     transition: border-color 0.15s ease, box-shadow 0.15s ease;
 
     &:focus {
-      border-color: var(--wiki-editor-border-strong);
-      box-shadow: 0 0 0 $padding-1 var(--color-link);
+      // Same focus treatment as the AI chat input card: accent border + a soft
+      // accent glow. outline:none because the glow already conveys focus and
+      // the global :focus-visible ring would stack a second border on top.
+      outline: none;
+      border-color: var(--color-link);
+      box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-link) 15%, transparent);
     }
 
     &:required+.book-search-spinner {
