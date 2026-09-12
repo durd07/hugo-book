@@ -33,6 +33,11 @@
     }
 
     pre code {
+      // The chip rule above outspecifies _markdown's `pre code` reset, so the
+      // background must be re-cleared here: on a multi-line plain block the
+      // inline code's translucent fill would otherwise paint per line-box as
+      // light "pills" over the pre background.
+      background: none;
       border: 0;
     }
 
