@@ -1,0 +1,7 @@
+{{- /*
+  ```markmap outline fences become the .markmap container that the lazy loader
+  in partials/docs/html-head.html picks up. The outline rides inside a raw-text
+  <script type="text/template"> (no entity escaping — the browser does not
+  decode entities there), exactly like the hand-written form this replaced.
+*/ -}}
+<div class="markmap"><script type="text/template">{{ .Inner | safeHTML }}</script></div>
