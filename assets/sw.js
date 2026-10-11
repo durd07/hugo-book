@@ -20,6 +20,13 @@ self.addEventListener("fetch", (event) => {
   if (request.method !== "GET") {
     return;
   }
+  // SSE streams (editor presence, the footer online counter): never route
+  // them through respondWith — cache.put() on a never-ending body never
+  // settles and the page would wait for the stream forever. Let the browser
+  // fetch those natively instead.
+  if (request.headers.get("Accept") === "text/event-stream") {
+    return;
+  }
 
   /**
    * @param {Response} response

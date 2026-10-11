@@ -87,7 +87,7 @@
   })();
 </script>
 
-<!-- Self-hosted visitor counter (page views / unique visitors / your IP). -->
+<!-- Self-hosted visitor counter (page views / live online tabs / your IP). -->
 <script>
   (function () {
     var el = document.getElementById("footer-stats");
@@ -126,9 +126,23 @@
     function render(d) {
       el.textContent = "";
       el.appendChild(stat("Views", num(d.pv)));
-      el.appendChild(stat("Visitors", num(d.uv)));
+      var onlineRow = stat("Online", "-");
+      el.appendChild(onlineRow);
       el.appendChild(stat("Your IP", d.ip || "-"));
       el.hidden = false;
+
+      // Live tab counter: one SSE stream per open tab, same transport as the
+      // editor presence hub. Opening a tab raises the count everywhere the
+      // moment its stream connects; closing it drops the stream and the count.
+      var out = onlineRow.getElementsByTagName("strong")[0];
+      try {
+        var es = new EventSource(apiBase() + "/online");
+        es.addEventListener("online", function (ev) {
+          try {
+            out.textContent = num(JSON.parse(ev.data).online);
+          } catch (e) {}
+        });
+      } catch (e) {}
     }
 
     fetch(apiBase() + "/visit", {
