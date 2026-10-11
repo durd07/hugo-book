@@ -134,34 +134,19 @@
       el.appendChild(stat("Your IP", d.ip || "-"));
       el.hidden = false;
 
-      // Live tab counter: one SSE stream per open tab, same transport as the
-      // editor presence hub. Opening a tab raises the count everywhere the
-      // moment its stream connects; closing it drops the stream and the count.
+      // Tab counter: one SSE stream per open tab (the stream itself is the
+      // presence signal). No live updates — the server sends the count once
+      // per connection, so the number reflects the moment this page opened.
+      // Any reconnect naturally re-fetches it.
       var out = onlineRow.getElementsByTagName("strong")[0];
-      function connect() {
+      try {
         var es = new EventSource(apiBase() + "/online");
         es.addEventListener("online", function (ev) {
           try {
             out.textContent = num(JSON.parse(ev.data).online);
           } catch (e) {}
         });
-        return es;
-      }
-      var es;
-      try {
-        es = connect();
       } catch (e) {}
-      // A service-worker generation change can strand the stream (the old
-      // worker hangs GET SSE forever): reopen through the new controller the
-      // moment it takes over this page, no reload needed.
-      if (navigator.serviceWorker) {
-        navigator.serviceWorker.addEventListener("controllerchange", function () {
-          try {
-            if (es) es.close();
-            es = connect();
-          } catch (e) {}
-        });
-      }
     }
 
     fetch(apiBase() + "/visit", {
