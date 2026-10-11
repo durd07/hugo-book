@@ -15,6 +15,14 @@ self.addEventListener("install", function (event) {
   });
 });
 
+// Claim open pages on activation (paired with skipWaiting above): without it a
+// new worker stays "waiting" until every wiki tab closes, and pages keep
+// running the previous generation — whose fetch handler hung GET SSE streams
+// (see the pass-through in the fetch listener below).
+self.addEventListener("activate", (event) => {
+  event.waitUntil(clients.claim());
+});
+
 self.addEventListener("fetch", (event) => {
   const request = event.request;
   if (request.method !== "GET") {
